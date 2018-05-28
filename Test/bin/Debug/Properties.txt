@@ -1,0 +1,3 @@
+WindowWidth=84
+WindowHeight=18
+LogHeight=13

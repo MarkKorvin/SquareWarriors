@@ -1,0 +1,14 @@
+C:\Users\alexander.morkovin\source\repos\Test\Test\bin\Debug\Test.exe.config
+C:\Users\alexander.morkovin\source\repos\Test\Test\bin\Debug\Test.exe
+C:\Users\alexander.morkovin\source\repos\Test\Test\bin\Debug\Test.pdb
+C:\Users\alexander.morkovin\source\repos\Test\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
+C:\Users\alexander.morkovin\source\repos\Test\Test\obj\Debug\Test.csproj.CoreCompileInputs.cache
+C:\Users\alexander.morkovin\source\repos\Test\Test\obj\Debug\Test.exe
+C:\Users\alexander.morkovin\source\repos\Test\Test\obj\Debug\Test.pdb
+D:\Новая папка\Свое\Проги\Test\Test\bin\Debug\Test.exe.config
+D:\Новая папка\Свое\Проги\Test\Test\bin\Debug\Test.exe
+D:\Новая папка\Свое\Проги\Test\Test\bin\Debug\Test.pdb
+D:\Новая папка\Свое\Проги\Test\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
+D:\Новая папка\Свое\Проги\Test\Test\obj\Debug\Test.csproj.CoreCompileInputs.cache
+D:\Новая папка\Свое\Проги\Test\Test\obj\Debug\Test.exe
+D:\Новая папка\Свое\Проги\Test\Test\obj\Debug\Test.pdb
