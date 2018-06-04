@@ -135,11 +135,11 @@ namespace Test
             string stats;
             if (Program.Enemy!= null && Program.Enemy.CurHealth > 0)
             {
-                stats = "Life " + Program.Hero.CurHealth + "/" + Program.Hero.MaxHealth + ", Damage " + Program.Hero.GetDamage() + ", Def " + Program.Hero.GetArmor();
+                stats = "Life " + Program.Hero.CurHealth + "/" + Program.Hero.MaxHealth +", Exp " + Program.Hero.exp + "/" + Program.Hero.NeededExp() + ", Damage " + Program.Hero.GetDamage() + ", Def " + Program.Hero.GetArmor();
                 stats += "\t Enemy "+Program.Enemy.Name+", Life "+Program.Enemy.CurHealth + "/" + Program.Enemy.MaxHealth + ", Damage " + Program.Enemy.GetDamage() + ", Def " + Program.Hero.GetArmor();
             }
             else
-                stats = "Life " + Program.Hero.CurHealth + "/" + Program.Hero.MaxHealth + ", Damage " + Program.Hero.GetDamage() + ", Def " + Program.Hero.GetArmor();
+                stats = "Life " + Program.Hero.CurHealth + "/" + Program.Hero.MaxHealth + ", Exp " + Program.Hero.exp + "/" + Program.Hero.NeededExp() + ", Damage " + Program.Hero.GetDamage() + ", Def " + Program.Hero.GetArmor();
 
             if (stats!=prevStats)
             {

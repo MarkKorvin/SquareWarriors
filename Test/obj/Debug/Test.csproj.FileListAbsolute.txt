@@ -12,3 +12,10 @@ D:\Новая папка\Свое\Проги\Test\Test\obj\Debug\Test.csprojReso
 D:\Новая папка\Свое\Проги\Test\Test\obj\Debug\Test.csproj.CoreCompileInputs.cache
 D:\Новая папка\Свое\Проги\Test\Test\obj\Debug\Test.exe
 D:\Новая папка\Свое\Проги\Test\Test\obj\Debug\Test.pdb
+K:\Сотрудники\Морковин Александр\Рабочий стол\DjVuReader.2.0.0.27\SquareWarriors-master\Test\bin\Debug\Test.exe.config
+K:\Сотрудники\Морковин Александр\Рабочий стол\DjVuReader.2.0.0.27\SquareWarriors-master\Test\bin\Debug\Test.exe
+K:\Сотрудники\Морковин Александр\Рабочий стол\DjVuReader.2.0.0.27\SquareWarriors-master\Test\bin\Debug\Test.pdb
+K:\Сотрудники\Морковин Александр\Рабочий стол\DjVuReader.2.0.0.27\SquareWarriors-master\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
+K:\Сотрудники\Морковин Александр\Рабочий стол\DjVuReader.2.0.0.27\SquareWarriors-master\Test\obj\Debug\Test.csproj.CoreCompileInputs.cache
+K:\Сотрудники\Морковин Александр\Рабочий стол\DjVuReader.2.0.0.27\SquareWarriors-master\Test\obj\Debug\Test.exe
+K:\Сотрудники\Морковин Александр\Рабочий стол\DjVuReader.2.0.0.27\SquareWarriors-master\Test\obj\Debug\Test.pdb

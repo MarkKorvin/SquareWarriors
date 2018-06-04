@@ -289,6 +289,8 @@ namespace Test
         Action del;
         public AI humanAI;
         public Politics group; //Содержит цвет 
+        public int level = 1;
+        public int exp;
         //public ConsoleColor Color = ConsoleColor.Gray;
         
         public int Agility = 1; //Основные параметры.
@@ -330,21 +332,27 @@ namespace Test
         }
 
         //Боевые методы
-        public int GetDamage()
+        public int GetDamage() //Узнать урон
         { int damage = Inv.RightHand != null ? Inv.RightHand.Quality + Strength : Strength;  return damage; }
-        public int GetArmor()
+        public int GetArmor()  //Узнать броню
         { int armor = Inv.Dress != null ? Inv.Dress.Quality : 0; return armor; }
         public void Heal(int healPower)
         {
             CurHealth = CurHealth + healPower > MaxHealth ? MaxHealth : CurHealth + healPower; 
         }
+
+        //Получение урона
         public void TakeDamage(Person agressor, int damage)
         {
             int armor = GetArmor();
             if (damage - armor > 0) // Если враг пробивает броню, то наносим урон
             {
                 CurHealth -= (damage - armor);
-                if (CurHealth <= 0) Dead();
+                if (CurHealth <= 0) 
+                {
+                    Dead();
+                    agressor.TakeExp(10 * level);
+                }
             }
             if(humanAI != null)
             if (humanAI.targets.Exists(x => x.Agressor == agressor))  // Добавляем аггро против атакующего
@@ -383,7 +391,8 @@ namespace Test
             catch (Exception e)
             { }
             Program.CurrentMap.MapObjects[y, x].Dude = null;
-            
+
+            Say("I'm dying!", 10);
         }
         
         //Нейтральные методы
@@ -427,6 +436,25 @@ namespace Test
                 Program.logColors.Push(group.Color);
             }
         }
+
+        //Получение опыта
+        public int NeededExp()
+        { return level * 100; }
+        public void TakeExp(int i)
+        {
+            exp += i;
+            while (exp >= NeededExp())
+            {
+                exp -= NeededExp();
+                LevelUp();
+            }
+        }
+        public void LevelUp()
+        {
+            level++;
+            Perks.CurAbils.freePoints ++;
+            Perks.CurAbils.perks[3, 3].AbilityLevel ++;
+        }
         
         //Для глобальных сообщений
         public void Explore()
@@ -441,12 +469,9 @@ namespace Test
             Info.Add(new Acts("Current damage = " + GetDamage() + ", Current defence = " + GetArmor(), del = () => { }, true));
             Info.Add(new Acts("Morality = " + Moral, del = () => { }, true));
             Info.Add(new Acts("Agility = " + Agility+ ", Strength = " + Strength + ", Inteligence = " + Inteligence + ", Charisma = " + Charisma, del = () => { }, true));
+            Info.Add(new Acts("Experience = " + exp + "/" + NeededExp(), del = () => { }, true));
         }
-        //RPG методы
-        private void GenerateSkills()
-        {
-        }
- 
+
         //Движение
         public void MoveLeft()
         {

@@ -21,6 +21,7 @@ namespace Test
             {
               basePerk = PerkGetBase();
             }//Визуализация
+
         public char[,] PerkGet()
             {
                 char[,] curField = PerkGetBase();
@@ -55,7 +56,7 @@ namespace Test
             Acts.Clear();
             Acts.Add(new Acts("Improve skill ", del = chooseAbility));
             Acts.Add(new Acts("Look at the skills", del = ()=> { CurAbils.CurrentAbilities(); ShowPerks(); }));
-            Program.mainDialog.SetDialog("This is a skillbar (free skillpoints = "+CurAbils.freePoints+") ", Acts);
+            Program.mainDialog.SetDialog("This is a skillbar (free skillpoints = "+ CurAbils.freePoints+") ", Acts);
         }
 
         public void chooseAbility()
@@ -148,7 +149,8 @@ namespace Test
             perks[6, 4] = new Ability("Inspiration");
             perks[6, 5] = new Ability("Traps");
             perks[6, 6] = new Ability("Forgery");
-            freePoints = 10;
+
+            freePoints = 1;
             perks[3, 3].AbilityLevel = 1;
         }
 
