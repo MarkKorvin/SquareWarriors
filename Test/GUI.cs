@@ -10,11 +10,11 @@ namespace Test
     [Serializable()]
     class GUI
     {
-        public char[] edge = Program.Properties.GetEdge();
-        int infoHeight = Program.Properties.GetInfoHeight();
-        int Height = Program.Properties.GetHeight();
-        int Width = Program.Properties.GetWidth();
-        int LogHeight = Program.Properties.GetLogHeight();
+        public char[] edge = GlobalProperties.GetEdge();
+        int infoHeight = GlobalProperties.GetInfoHeight();
+        int Height = GlobalProperties.GetHeight();
+        int Width = GlobalProperties.GetWidth();
+        int LogHeight = GlobalProperties.GetLogHeight();
         string prevStats="";
 
         //==========================================================================  Вывод на экран  ====================================================================================================
@@ -44,7 +44,7 @@ namespace Test
 
                 if (Program.mainDialog.Actions.Count() > 0)
                 {
-                    for (int i = 1 + Next; i <= Math.Min(Program.mainDialog.Actions.Count(),Next+Program.Properties.GetInfoHeight()-4); i++)
+                    for (int i = 1 + Next; i <= Math.Min(Program.mainDialog.Actions.Count(),Next+ GlobalProperties.GetInfoHeight()-4); i++)
                     {
                         if(Program.mainDialog.Actions[i - 1].ActInfo!="")
                         Console.WriteLine("" + i + ". " + Program.mainDialog.Actions[i - 1].ActInfo);

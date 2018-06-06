@@ -15,7 +15,8 @@ namespace Test
         List<Acts> Acts = new List<Acts>();
         Action del;
         public Abilities CurAbils = new Abilities();
-        
+
+
 
         public Perk()
             {
@@ -65,7 +66,7 @@ namespace Test
             
             if (I == 10 )//Выбор направления
             {
-                Acts.Add(new Acts("Стойкость ", del = () => { I = 0; chooseAbility(); }));
+                Acts.Add(new Acts("Persistance ", del = () => { I = 0; chooseAbility(); }));
                 Acts.Add(new Acts("Strength ", del = () => { I = 1; chooseAbility(); }));
                 Acts.Add(new Acts("Agility ", del = () => { I = 2; chooseAbility(); }));
                 Acts.Add(new Acts("Charisma and Perception ", del = () => { I = 3; chooseAbility(); }));
@@ -96,11 +97,15 @@ namespace Test
         public Ability[,] perks;
         public int freePoints;
 
+        public int Agility = 1;
+        public int Strength = 1;
+        public int Inteligence = 1;
+        public int Charisma = 1;
+
         public Abilities()
         {
             perks = new Ability[7, 7];
             perks[0, 0] = new Ability("Leadership");
-
             perks[0, 1] = new Ability("Fidelity");
             perks[0, 2] = new Ability("Resistance");
             perks[0, 3] = new Ability("Persistance");
@@ -150,7 +155,7 @@ namespace Test
             perks[6, 5] = new Ability("Traps");
             perks[6, 6] = new Ability("Forgery");
 
-            freePoints = 1;
+            freePoints = 3;
             perks[3, 3].AbilityLevel = 1;
         }
 
@@ -168,7 +173,6 @@ namespace Test
                             abils[k, j] = 1;
                         }
                 }
-
             return abils;
         }
 
@@ -178,12 +182,31 @@ namespace Test
             {
                 perks[i, j].AbilityLevel++;
                 freePoints--;
+                if (i == 3)
+                    if (j < 3)
+                        Charisma += 2;
+                    else
+                        Strength += 2;
+                else
+                if (j == 3)
+                    if (i > 3)
+                        Inteligence += 2;
+                    else
+                        Agility += 2;
+                else
+                if (i < 3) { Strength++; }
+                if (i > 3) { Inteligence ++; }
+                if (j < 3) { Charisma ++; }
+                if (j > 3) { Agility++;}
+
             }
         }
+
         public string AbilityInfo(int i, int j)
         {
             return perks[i, j].AbilityName + " (" + perks[i, j].AbilityLevel + ") ";
         }
+
         public void CurrentAbilities()
         {
             string Answer="";
@@ -196,10 +219,13 @@ namespace Test
             Program.Helper.Say(Answer);
         }
     }
+
+
     public class Ability
     {
         public string AbilityName;
         public int AbilityLevel = 0;
+
         public Ability(string AbilityName)
         {
             this.AbilityName = AbilityName;

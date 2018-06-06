@@ -9,7 +9,7 @@ namespace Test
     [Serializable()]
     public class Politics
     {
-        public  int number;
+        public int number;
         public string Name;
         public ConsoleColor Color;
         Relations.Style Style;
@@ -21,6 +21,33 @@ namespace Test
             this.Style = Style;
         }
     }
+
+    static public class BaseGroups
+    {
+        static public List<Politics> groups = new List<Politics>();                 //Основные группы
+
+        static public Politics GrHero = new Politics("Hero", ConsoleColor.Green, Relations.Style.neutral);
+        static public Politics GrFriends = new Politics("Friends", ConsoleColor.Cyan, Relations.Style.neutral);
+        static public Politics GrEnemies = new Politics("Enemies", ConsoleColor.Red, Relations.Style.neutral);
+        static public Politics GrHelper = new Politics("Helper", ConsoleColor.Yellow, Relations.Style.neutral);
+
+        static public void FillGroups()
+        { 
+            groups.Add(GrHero); groups.Add(GrFriends); groups.Add(GrEnemies);  // Устанавливаем отношения между группами
+            foreach (Politics group in groups)
+            {
+                group.number = Relations.N;
+                Relations.AddGroup(group);
+            }
+            Relations.SetRelations(GrHero.number, GrFriends.number, Relations.Relate.lovers);
+            Relations.SetRelations(GrHero.number, GrEnemies.number, Relations.Relate.haters);
+            Relations.SetRelations(GrFriends.number, GrEnemies.number, Relations.Relate.haters);
+        }
+
+
+    }
+
+
 
     [Serializable()]
     public class Relations
@@ -49,7 +76,7 @@ namespace Test
             relations[first, second] = relation;
             relations[second, first] = relations[first, second];
 
-            /*   if (relation == Relate.haters)     //Возникает бесконечная рекурсия. Переделать по возможности
+            /*   if (relation == Relate.haters)     //Возникает бесконечная рекурсия. Переделать
                    for (int i = 0; i < N; i++)
                    {
                        if (relations[first, i] == Relate.lovers)
@@ -79,9 +106,6 @@ namespace Test
                            SetRelations(first, i, Relate.haters);
                        }
                    }
-            
-            // if (relation == Relate.lovers)
-
         }
 
 

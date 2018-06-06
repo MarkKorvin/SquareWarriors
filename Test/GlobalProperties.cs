@@ -11,19 +11,19 @@ using System.Runtime.Serialization;
 namespace Test
 {
     [Serializable()]
-    class GlobalProperties
+    static class GlobalProperties
     {
         //=======================================  Параметры мира  =============== 
 
         static public int dayMinute = 48;   //Сколько минут идут одни сутки                            
-        public List<Acts> MenuMethods = new List<Acts>();
-        Action del;
+        static public List<Acts> MenuMethods = new List<Acts>();
+        static Action del;
 
         // Меню, вызываемое по нажатию ESC
-        public void ShowMenu()
+        static public void ShowMenu()
         {
             MenuMethods.Clear();
-            MenuMethods.Add(new Acts("Main Menu", del = () => { Program.Window = 3; Program.menu.ShowMenu(); }));
+            MenuMethods.Add(new Acts("Main Menu", del = () => { Program.Window = Program.Windows.menu; MainMenu.ShowMenu(); }));
             MenuMethods.Add(new Acts("Save", del = Save));
             MenuMethods.Add(new Acts("Load", del = Load));
             MenuMethods.Add(new Acts("Game Properties", del = GamePr));
@@ -31,7 +31,7 @@ namespace Test
             MenuMethods.Add(new Acts("Audio Properties", del = AudioPr, true));
             Program.mainDialog.SetDialog("MENU", MenuMethods);
         }
-        public void Save()
+        static public void Save()
         {   
             FileStream fstream = File.Open(AppDomain.CurrentDomain.BaseDirectory + "//Saves//test", FileMode.Create);
             BinaryFormatter binaryFormatter = new BinaryFormatter();
@@ -40,7 +40,7 @@ namespace Test
             Program.Helper.Say("Save is succesfull");
         }
 
-        public void Load()
+        static public void Load()
         {
             MenuMethods.Clear();
 
@@ -60,13 +60,13 @@ namespace Test
             Program.mainDialog.SetDialog("Choose the map", MenuMethods);
           */
         }
-        public void GamePr()
+        static public void GamePr()
         {
             MenuMethods.Clear();
             MenuMethods.Add(new Acts("Day long = " + dayMinute.ToString() + " minutes", del = () => { dayMinute = dayMinute < 144 ? dayMinute += 24 : 48; GamePr(); }));
             Program.mainDialog.SetDialog("Game Properties", MenuMethods);
         }
-        public void VideoPr()
+        static public void VideoPr()
         {
             MenuMethods.Clear();
             MenuMethods.Add(new Acts("Screen width (max - " + (Console.LargestWindowWidth - 2).ToString()+ ") = "+ WindowWidth.ToString(), del = () => { WindowWidth = WindowWidth < Console.LargestWindowWidth - 2 ? WindowWidth += 1 : 30; SetProperties(); VideoPr(); }));
@@ -74,11 +74,11 @@ namespace Test
             MenuMethods.Add(new Acts("Logbar height = " + (LogHeight-5).ToString(), del = () => { LogHeight = LogHeight < 20 ? LogHeight += 1 : 8; SetProperties(); VideoPr(); }));
             Program.mainDialog.SetDialog("Changes will take effect after reboot", MenuMethods);
         }
-        public void AudioPr()
+        static public void AudioPr()
         { }
 
         // Меню, вызываемое по нажатию F2
-        public void ShowHelp()
+        static public void ShowHelp()
         {
             MenuMethods.Clear();
             MenuMethods.Add(new Acts("Press ESC to change game properties", del = () => { ShowHelp(); }));
@@ -93,12 +93,12 @@ namespace Test
 
         //=======================================  Параметры консоли  ===============
 
-        private int WindowWidth;
-        private int InfoHeight;
-        private int WindowHeight;
-        private int LogHeight;
+        static private int WindowWidth;
+        static private int InfoHeight;
+        static private int WindowHeight;
+        static private int LogHeight;
         //Конструктор 
-        public GlobalProperties()
+        static GlobalProperties()
         {
             //WindowWidth = 80;
             //WindowWidth = Console.LargestWindowWidth-2; //На весь экран
@@ -108,7 +108,7 @@ namespace Test
             //WindowHeight = Console.LargestWindowHeight - InfoHeight - LogHeight;
         }
 
-        private void GetProperties()
+        static private void GetProperties()
         {
             string fileName = "Properties.txt";
             string[] lines = File.ReadAllLines(fileName);
@@ -132,10 +132,11 @@ namespace Test
             }
 
         }
-        private void SetProperties()
+        static private void SetProperties()
         {
             string fileName = "Properties.txt";
             string[] dataProperties = new string[3];
+            
             dataProperties[0] = "WindowWidth=" + WindowWidth.ToString();
             //dataProperties[1] = "InfoHeight=" + InfoHeight.ToString();
             dataProperties[1] = "WindowHeight=" + WindowHeight.ToString();
@@ -145,19 +146,19 @@ namespace Test
         }
 
         //Геттеры
-        public int GetWidth()
+        static public int GetWidth()
         {
             return WindowWidth;
         }
-        public int GetInfoHeight()
+        static public int GetInfoHeight()
         {
             return InfoHeight;
         }
-        public int GetHeight()
+        static public int GetHeight()
         {
             return WindowHeight;
         }
-        public int GetLogHeight()
+        static public int GetLogHeight()
         {
             return LogHeight;
         }
@@ -180,8 +181,9 @@ namespace Test
         static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
         //Задаем параметры консоли
-        public void SetConsoleParams()
+        static public void SetConsoleParams()
         {
+            Console.OutputEncoding = Encoding.UTF8;
             Console.SetWindowSize(WindowWidth , InfoHeight + WindowHeight + LogHeight);
             Console.Title = "WinAPI";
             var hWnd = FindWindow(null, Console.Title);
@@ -197,10 +199,10 @@ namespace Test
             Console.CursorVisible = false;
         }
         //Получить масштабируемую разделительную полосу
-        public char[] GetEdge()
+        static public char[] GetEdge()
         {
             char[] edge = new char[WindowWidth];
-            for (int i = 0; i < this.WindowWidth; i++)
+            for (int i = 0; i < WindowWidth; i++)
             {
                 edge[i] = '=';
             }

@@ -9,12 +9,11 @@ using System.Threading;
 namespace Test
 {
     [Serializable]
-    class Program
+  static class Program
     {
-        static public GlobalProperties Properties = new GlobalProperties();         //настройки консоли и пр. 
         static public GUI mainGUI = new GUI();                                      //управление вводом/выводом
         static public Dialog mainDialog = new Dialog();                             //работа с диалогами
-        static public MainMenu menu = new MainMenu();
+        //static public MainMenu menu = new MainMenu();
         static public Map CurrentMap;                                               //ссылка на текущую карту
         static public DateTime curTime;                                             //текущее время и дата
         static public Stack<string> logData = new Stack<string>();                  //логи
@@ -23,19 +22,15 @@ namespace Test
         static Random rand = new Random();
         static public Person Hero;                                                  //ГГ
         static public Person Enemy;
-        //Relations relations = new Relations();
-        static public List<Politics> groups = new List<Politics>();                 //Основные группы
-        static public Politics GrHero = new Politics("Hero", ConsoleColor.Green, Relations.Style.neutral);
-        static public Politics GrFriends = new Politics("Friends", ConsoleColor.Cyan, Relations.Style.neutral);
-        static public Politics GrEnemies = new Politics("Enemies", ConsoleColor.Red, Relations.Style.neutral);
-        static public Politics GrHelper = new Politics("Helper", ConsoleColor.Yellow, Relations.Style.neutral);
-        static public Person Helper = new Person('?', "Helper", 0, 0, GrHelper);
+        static public Person Helper = new Person('?', "Helper", 0, 0, BaseGroups.GrHelper);
 
-        static public int Window = 0;//0 - основное окно, 1 - инвентарь, 2 - журнал, 3 - главное меню //активное окно
+        public enum Windows {main, inventory, journal, menu, skills};
+        static public Windows Window = Windows.main;                                               
         static public char[,] SecondWindow = null;                                  //инвентарь||журнал и пр..
+
         static private System.Timers.Timer aTimer = new System.Timers.Timer();      //таймер
         static public bool isOnPause = false;                                       //на паузе ли игра
-        static public bool timeDraw;                                                //нужно ли обновить время
+        static public bool timeDraw = true;                                         //нужно ли обновить время
 
         //Изменение времени
         private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e) 
@@ -60,26 +55,12 @@ namespace Test
 
         static void Main(string[] args)
         {
-           
-            Properties.SetConsoleParams();                  // устанавливаем параметры консоли
-            timeDraw = true;
-            curTime = new DateTime(2007, 6, 14, 9, 0, 0);   // текущая дата
 
-
-            groups.Add(GrHero); groups.Add(GrFriends); groups.Add(GrEnemies);  // Устанавливаем отношения между группами
-            foreach (Politics group in groups)
-            {
-                group.number = Relations.N;
-                Relations.AddGroup(group);
-            }
-            Relations.SetRelations(GrHero.number, GrFriends.number, Relations.Relate.lovers);
-            Relations.SetRelations(GrHero.number, GrEnemies.number, Relations.Relate.haters);
-            Relations.SetRelations(GrFriends.number, GrEnemies.number, Relations.Relate.haters);
-
-
-            Window = 3;
-            menu.ShowMenu();
-
+            GlobalProperties.SetConsoleParams();                  // устанавливаем параметры консоли
+            curTime = new DateTime(2007, 6, 14, 9, 0, 0);         // устанавливаем текущую дату
+            BaseGroups.FillGroups();                              // Устанавливаем отношения между группами
+            Window = Windows.menu;                                // Включаем главное меню
+            MainMenu.ShowMenu();
 
             //---------------------------------------------------------------------------Обработчик действий
             ConsoleKeyInfo key;
@@ -166,7 +147,7 @@ namespace Test
                         Hero.Say("Follow me, Bros!", 25);//Громкость X :  обычный слух с трудом, но услышит звук с X клеток
                         foreach (Map.Cell cell in CurrentMap.MapObjects)
                         {
-                            if (cell.Dude != null && cell.Dude != Hero && Math.Max(Math.Abs(Hero.x - cell.Dude.x), Math.Abs(Hero.y - cell.Dude.y)) < 25 && Relations.relations[cell.Dude.group.number, GrHero.number] == Relations.Relate.lovers) //     cell.Dude.Color == ConsoleColor.Cyan)
+                            if (cell.Dude != null && cell.Dude != Hero && Math.Max(Math.Abs(Hero.x - cell.Dude.x), Math.Abs(Hero.y - cell.Dude.y)) < 25 && Relations.relations[cell.Dude.group.number, BaseGroups.GrHero.number] == Relations.Relate.lovers) //     cell.Dude.Color == ConsoleColor.Cyan)
                             {
                                 if(rand.Next(100)<10) cell.Dude.Say("АААА!", 25);
                                 cell.Dude.humanAI.MoveTo(Hero.x, Hero.y);
@@ -225,7 +206,7 @@ namespace Test
                 else if (e.key.Key ==  ConsoleKey.Escape)
                 {
                     isOnPause = !isOnPause;
-                    if (Window != 3)
+                    if (Window != Windows.menu)
                         try
                     {
                         if (Window != 0)
@@ -234,7 +215,7 @@ namespace Test
                             mainDialog.SetDialog("You see:", CurrentMap.GetObjInfo(Hero.x, Hero.y));
                         }
                         else
-                            Properties.ShowMenu();
+                                GlobalProperties.ShowMenu();
                     }
                     catch (Exception exep)
                     { }
@@ -244,7 +225,7 @@ namespace Test
                 {
                     try
                     {
-                        Properties.ShowHelp();
+                        GlobalProperties.ShowHelp();
                     }
                     catch (Exception exep)
                     { }
@@ -252,11 +233,11 @@ namespace Test
                 //-----------------------------------------------------------------------Инвентарь
                 else if (e.key.Key == ConsoleKey.I)
                 {
-                    if (Window != 3)
+                    if (Window != Windows.menu)
                         try
                     {
                         Hero.Inv.ShowObj();
-                        Window = Window == 1 ? 0 : 1;
+                        Window = Window == Windows.inventory ? Windows.main : Windows.inventory;
 
                         if (Window == 0)
                             mainDialog.SetDialog("You see:", CurrentMap.GetObjInfo(Hero.x, Hero.y));
@@ -268,11 +249,11 @@ namespace Test
                 //-----------------------------------------------------------------------Журнал
                 else if (e.key.Key == ConsoleKey.J)
                 {
-                    if (Window != 3)
+                    if (Window != Windows.menu)
                         try
                     {
                         mainDialog.SetDialog("This is your personal diary");
-                        Window = Window == 2 ? 0 : 2;
+                        Window = Window == Windows.journal ? Windows.main : Windows.journal;
 
                         if (Window == 0)
                             mainDialog.SetDialog("You see:", CurrentMap.GetObjInfo(Hero.x, Hero.y));
@@ -283,12 +264,12 @@ namespace Test
                 }
                 else if (e.key.Key == ConsoleKey.K)
                 {
-                    if (Window != 3)
+                    if (Window != Windows.menu)
                         try
                         {
                             Hero.Perks.ShowPerks();
                             //mainDialog.SetDialog("Это список ваших способностей и характеристик");
-                            Window = Window == 4 ? 0 : 4;
+                            Window = Window == Windows.skills ? Windows.main : Windows.skills;
 
                             if (Window == 0)
                                 mainDialog.SetDialog("You see:", CurrentMap.GetObjInfo(Hero.x, Hero.y));
@@ -315,43 +296,44 @@ namespace Test
                 key = Console.ReadKey(true);
                 kevt.OnKeyPress(key);
             }
+
             //Обновление экрана
             void DrawInTime()
             {
                 while (true)
                 {
-                    if (Window != 3)
+                    if (Window != Windows.menu)
                     {
-                        CurrentMap.GetTopView();
+                        CurrentMap.GetTopView();//Рисуем карту
                         mainGUI.DrawMenu();//Рисуем время
-                        mainGUI.DrawStat();//Рисуем время
+                        mainGUI.DrawStat();//Рисуем параметры
                     }
                         
                     mainGUI.DrawDialog(mainDialog.DialogText);//Рисуем диалог
-                    mainGUI.DrawLog();
+                    mainGUI.DrawLog();//Рисуем лог
 
                     if (Window == 0)
                         { mainGUI.DrawField(CurrentMap, Hero); }
-                        else if (Window == 1)
+                        else if (Window == Windows.inventory)
                         {
                             SecondWindow = Hero.Inv.InventoryGet();
                             mainGUI.DrawOtherField();
                         }
-                        else if (Window == 2)
+                        else if (Window == Windows.journal)
                         {
                             SecondWindow = Hero.journal.JournalGet();
                             mainGUI.DrawOtherField();
                         }
-                        else if (Window == 3)
+                        else if (Window == Windows.menu)
                         {
-                            SecondWindow = menu.MenuGet();
+                            SecondWindow = MainMenu.MenuGet();
                             mainGUI.DrawOtherField();
                         }
-                    else if (Window == 4)
-                    {
-                        SecondWindow = Hero.Perks.PerkGet();
-                        mainGUI.DrawOtherField();
-                    }
+                        else if (Window == Windows.skills)
+                        {
+                            SecondWindow = Hero.Perks.PerkGet();
+                            mainGUI.DrawOtherField();
+                        }
 
                 }
             }

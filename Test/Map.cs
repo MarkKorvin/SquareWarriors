@@ -155,6 +155,7 @@ namespace Test
                 case '╠': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
                 case '╬': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
                 case '╣': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
+                case 'Ƹ': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
                 case '╚': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
                 case '╩': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
                 case '╝': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
@@ -175,9 +176,9 @@ namespace Test
                 case 'h': MapObjects[y, x].MainObj = new Block(Sym, "Chair", "SimpleMov", x, y, true); break;
                 case '■': MapObjects[y, x].MainObj = new Block(Sym, "Box", "SimpleMov", x, y, true); break;
                 //============================================================================================= Персонажи
-                case 'X': Program.Hero = new Person(Sym, "Hero", x, y, Program.GrHero); break;
-                case 'Y': MapObjects[y, x].Dude = new Person(Sym, "Friend", x, y, Program.GrFriends); MapObjects[y, x].Dude.Inv.RightHand = new Stuff("Stick", MapObjects[y, x].Dude, "Weapon", 2, 1); break;
-                case 'Z': MapObjects[y, x].Dude = new Person(Sym, "Enemy", x, y, Program.GrEnemies); MapObjects[y, x].Dude.Inv.RightHand = new Stuff("Stick", MapObjects[y, x].Dude, "Weapon", 2, 1); break;
+                case 'X': Program.Hero = new Person(Sym, "Hero", x, y, BaseGroups.GrHero); break;
+                case 'Y': MapObjects[y, x].Dude = new Person(Sym, "Friend", x, y, BaseGroups.GrFriends); MapObjects[y, x].Dude.Inv.RightHand = new Stuff("Stick", MapObjects[y, x].Dude, "Weapon", 2, 1); break;
+                case 'Z': MapObjects[y, x].Dude = new Person(Sym, "Enemy", x, y, BaseGroups.GrEnemies); MapObjects[y, x].Dude.Inv.RightHand = new Stuff("Stick", MapObjects[y, x].Dude, "Weapon", 2, 1); break;
 
                 //============================================================================================= Фоновые объекты
                 case ' ': MapObjects[y, x].BG = new BackGround(Sym, "Ground",  x, y, false); break;             

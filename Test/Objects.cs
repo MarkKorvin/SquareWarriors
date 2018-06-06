@@ -293,11 +293,6 @@ namespace Test
         public int exp;
         //public ConsoleColor Color = ConsoleColor.Gray;
         
-        public int Agility = 1; //Основные параметры.
-        public int Strength = 1;
-        public int Inteligence = 1;
-        public int Charisma = 1;
-
         public int MaxHealth = 100; //Изменяемые параметры
         public int CurHealth;
         public int Regeneration = 1; 
@@ -323,17 +318,16 @@ namespace Test
 
             if (Name != "Hero")
             {
-                humanAI = new AI(this, Inteligence);
+                humanAI = new AI(this, Perks.CurAbils.Inteligence);
                 humanAI.StartThinking();
-
-                Methods.Add(new Acts("Info", del = Explore));
             }
+            Methods.Add(new Acts("Info", del = Explore));
 
         }
 
         //Боевые методы
         public int GetDamage() //Узнать урон
-        { int damage = Inv.RightHand != null ? Inv.RightHand.Quality + Strength : Strength;  return damage; }
+        { int damage = Inv.RightHand != null ? Inv.RightHand.Quality + Perks.CurAbils.Strength : Perks.CurAbils.Strength;  return damage; }
         public int GetArmor()  //Узнать броню
         { int armor = Inv.Dress != null ? Inv.Dress.Quality : 0; return armor; }
         public void Heal(int healPower)
@@ -416,8 +410,8 @@ namespace Test
         }
         public void Say(string Text)
         {
-            int screenLength = Program.Properties.GetWidth()-Name.Length -2;
-            int screenLength1 = Program.Properties.GetWidth();
+            int screenLength = GlobalProperties.GetWidth()-Name.Length -2;
+            int screenLength1 = GlobalProperties.GetWidth();
             int lastLine = (Text.Length- screenLength) % screenLength1;
             int minus;
 
@@ -454,6 +448,7 @@ namespace Test
             level++;
             Perks.CurAbils.freePoints ++;
             Perks.CurAbils.perks[3, 3].AbilityLevel ++;
+            Program.Helper.Say(Name+" achieved level "+level+"!");
         }
         
         //Для глобальных сообщений
@@ -468,7 +463,7 @@ namespace Test
             Info.Add(new Acts("Health = " + CurHealth+"/"+MaxHealth, del = () => { }, true));
             Info.Add(new Acts("Current damage = " + GetDamage() + ", Current defence = " + GetArmor(), del = () => { }, true));
             Info.Add(new Acts("Morality = " + Moral, del = () => { }, true));
-            Info.Add(new Acts("Agility = " + Agility+ ", Strength = " + Strength + ", Inteligence = " + Inteligence + ", Charisma = " + Charisma, del = () => { }, true));
+            Info.Add(new Acts("Agility = " + Perks.CurAbils.Agility + ", Strength = " + Perks.CurAbils.Strength + ", Inteligence = " + Perks.CurAbils.Inteligence + ", Charisma = " + Perks.CurAbils.Charisma, del = () => { }, true));
             Info.Add(new Acts("Experience = " + exp + "/" + NeededExp(), del = () => { }, true));
         }
 

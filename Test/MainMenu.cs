@@ -8,14 +8,14 @@ using System.IO;
 namespace Test
 {
     [Serializable()]
-    class MainMenu
+    static class MainMenu
     {
-        private char[,] baseMenu;
-        List<Acts> Acts = new List<Acts>();
-        Action del;
+        static char[,] baseMenu;
+        static List<Acts> Acts = new List<Acts>();
+        static Action del;
 
         //Конструктор журнала
-        public MainMenu()
+        static MainMenu()
         {
             baseMenu = MenuGet();
         }
@@ -23,7 +23,7 @@ namespace Test
         //Геттер текущего журнала
      
         //Получение заготовки для журнала из файла
-        public char[,] MenuGet()
+        static public char[,] MenuGet()
         {
             string fileName = "MainPicture.txt";
             string[] lines = File.ReadAllLines(fileName);
@@ -45,15 +45,16 @@ namespace Test
         }
 
 
-        public void ShowMenu() //Предметы в инвентаре
+        static public void ShowMenu()
         {
             Acts.Clear();
             Acts.Add(new Acts("Start new game", del = newGame));
-            Acts.Add(new Acts("Load game", del = loadGame, true));
+            //Acts.Add(new Acts("Load game", del = loadGame));
+            Acts.Add(new Acts("Load game", del = ShowMenu));
             Program.mainDialog.SetDialog("", Acts);
         }
 
-        public void newGame()
+        static private void newGame()
         {
             Acts.Clear();
 
@@ -67,7 +68,8 @@ namespace Test
             }
 
         }
-        public void loadGame()
+
+        static private void loadGame()
         {
             Acts.Clear();
         }

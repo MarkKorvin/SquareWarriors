@@ -22,7 +22,7 @@ namespace Test
         {
             Acts qwe = new Acts("", del = () => { });
             nullList.Insert(0, qwe);
-            TabAction = new Acts("-----Show more-----", del = () => { Next = Next == Program.Properties.GetInfoHeight() - 4 ? 0 : Program.Properties.GetInfoHeight() - 4; });
+            TabAction = new Acts("-----Show more-----", del = () => { Next = Next == GlobalProperties.GetInfoHeight() - 4 ? 0 : GlobalProperties.GetInfoHeight() - 4; });
         }
 
         //Конструкторы диалогов
