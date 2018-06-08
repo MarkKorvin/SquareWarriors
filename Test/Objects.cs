@@ -64,20 +64,8 @@ namespace Test
             Action del;
             this.isBlock = isBlock;
             this.symbol = symbol;
-            if (Name == "Opened Door" || Name == "Closed Door")
-            { Methods.Add(new Acts("Open/Close", del = Open, true));  }
         }
 
-        //Для дверей и блокираторов
-        public void Open()
-        {
-            if (Program.CurrentMap.MapObjects[y, x].MainObj == null && Program.CurrentMap.MapObjects[y, x].Dude == null)
-            {
-                isBlock = !isBlock;
-                symbol = isBlock ? 'Ш' : 'П';
-                Name = Name == "Opened Door" ? "Closed Door" : "Opened Door";
-            }
-        }
     }
 
     //===============================================Свойства карманных предметов

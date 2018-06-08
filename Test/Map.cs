@@ -184,8 +184,10 @@ namespace Test
                 case ' ': MapObjects[y, x].BG = new BackGround(Sym, "Ground",  x, y, false); break;             
                 case '«': MapObjects[y, x].BG = new BackGround(Sym, "Grass",  x, y, false); break;
                 case '░': MapObjects[y, x].BG = new BackGround(Sym, "Water",  x, y, true); break;
-                case 'Ш': MapObjects[y, x].BG = new BackGround(Sym, "Closed Door", x, y, true); break;
-                case 'П': MapObjects[y, x].BG = new BackGround(Sym, "Opened Door", x, y, false); break;
+                case 'Ж': MapObjects[y, x].BG = new Home(Sym, "Closed Door", x, y, true, true,new List<Person>(){ new Person('Y', "Vano", x, y, BaseGroups.GrFriends), new Person('Y', "Denchik", x, y, BaseGroups.GrFriends) }); break;
+                case 'Щ': MapObjects[y, x].BG = new Door(Sym, "Closed Door", x, y, true, true); break;
+                case 'Ш': MapObjects[y, x].BG = new Door(Sym, "Closed Door", x, y, true, false); break;
+                //case 'П': MapObjects[y, x].BG = new Door(Sym, "Opened Door", x, y, false); break;
                 case '<': MapObjects[y, x].BG = new BackGround(Sym, "Automatic Door", x, y, false); break;
                 case '>': MapObjects[y, x].BG = new BackGround(Sym, "Automatic Door", x, y, false); break;
                 case 'u': MapObjects[y, x].BG = new BackGround(Sym, "Stair", x, y, false); break;
