@@ -14,7 +14,7 @@ namespace Test
         static public System.Timers.Timer aTimer = new System.Timers.Timer();      //таймер
 
         Person Man;                                             //Человек, которому принадлежит данный АИ
-        int SmartLevel;                                         //Уровень интеллекта(мб стоит юзать готовый Intelligence)
+        int SmartLevel;                                         //Уровень интеллекта
         int Reaction = 200;                                     //Задержка между действиями(мсек)
         enum Patterns {SeekAndDestroy, Rest, Explore, Saving}  //Перечисление возможных режимов мышления
         Patterns CurPattern;                                    //Текущий режим

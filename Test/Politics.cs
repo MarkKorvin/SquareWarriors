@@ -22,6 +22,7 @@ namespace Test
         }
     }
 
+    [Serializable()]
     static public class BaseGroups
     {
         static public List<Politics> groups = new List<Politics>();                 //Основные группы

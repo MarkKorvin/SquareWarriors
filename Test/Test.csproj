@@ -46,11 +46,13 @@
     <Compile Include="Dialog.cs" />
     <Compile Include="GlobalProperties.cs" />
     <Compile Include="GUI.cs" />
+    <Compile Include="Hero.cs" />
     <Compile Include="Home.cs" />
     <Compile Include="Inventory.cs" />
     <Compile Include="Journal.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="Map.cs" />
+    <Compile Include="MapEditor.cs" />
     <Compile Include="Objects.cs" />
     <Compile Include="Perk.cs" />
     <Compile Include="Politics.cs" />

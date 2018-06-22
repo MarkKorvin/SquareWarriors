@@ -18,6 +18,7 @@ namespace Test
         public char[,] mapField;
         public Cell[,] MapObjects;
         static private System.Timers.Timer aTimer = new System.Timers.Timer();
+        public MapEditor editor;
        
 
         [Serializable()]
@@ -90,6 +91,7 @@ namespace Test
         //Конструкторы карты
         public Map(string fileName) // Создать карту с помощью файла
         {
+            editor = new MapEditor();
             GetMapFromFile(fileName);
 
             aTimer.AutoReset = true;
@@ -101,104 +103,88 @@ namespace Test
         //Вспомогательные методы для генерации карты
         public void GetMapFromFile(string fileName) //Метод читает указанный файл и переводит его в массив объектов
         {
-
             string[] lines = File.ReadAllLines("Maps//"+fileName);
 
+            width = lines[0].Length;
             height = 0;
             for (int k = 0; k < lines.Length; k++) //Определяем высоту карты. Карта должна заканчиваться кодовым словом <objects>
             {
                 if (lines[k] == "<objects>")
                 { height = k; break; }
+                height++;
             }
 
-            if (height == 0)
-            { height = lines.Length; }
-            width = lines[0].Length;
+            if (height < lines.Length)//Заполняем всспомогательную таблицу объектов
+            {
+                for (int i = height+1; i < lines.Length; i++)
+                {
+                    String[] data = lines[i].Split(' ');
+                    String[] data2 = new String[data.Length-4];
+                    Array.Copy(data,3, data2, 0, data.Length - 4);
+                    editor.AddToTable(data[0],data[1].ToCharArray()[0], data[2].ToCharArray()[0], data[3],data2);
+                }
+            }
+            editor.UniteTabs();
 
             char[,] curField = new char[height, width]; //Создаем основной массив символов
 
-            for (int k = 0; k< height; k++)
+            MapObjects = new Cell[height, width];
+            for (int k = 0; k < height; k++) //Переводим символы по всей высоте
             {
                 char[] tempArray = lines[k].ToCharArray();
                 for (int j = 0; j < width; j++)
                 {
                     curField[k, j] = lines[k][j];
+                    MapObjects[k, j].BG = new BackGround(' ', "Ground", j, k, false);
+                    SymbolToObject(curField[k, j], j, k);
                 }
             }
-
-            MapObjects = new Cell[height, width];
-
-            for (int i = 0; i < height; i++)
-                for (int j = 0; j < width; j++)
-                {
-                    MapObjects[i, j].BG = new BackGround(' ', "Ground",  j, i, false);
-                    SymbolToObject(curField[i, j], j, i);           
-                }
-
             mapField = curField;
-
-            MapObjects[Program.Hero.y, Program.Hero.x].Dude = Program.Hero;
-
             Program.Helper.Say("Load was succesfully");
         }
+
+
+
+
+
+
 
         public void SymbolToObject(char Sym, int x, int y) //Перевод символа в объект. В таблице ниже перечислены все известные объекты (Кроме переносимых, у которых одинаковый символ)
         {
             MapObjects[y, x].PocketObj = new List<Stuff> { };
-            switch (Sym)
-            {
-                //============================================================================================= Недвижимые объекты
-                //Список типов - "SimpleMov", "SimStable"
-                case '╔': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;    
-                case '╦': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
-                case '╗': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
-                case '╠': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
-                case '╬': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
-                case '╣': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
-                case 'Ƹ': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
-                case '╚': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
-                case '╩': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
-                case '╝': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
-                case '═': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
-                case '║': MapObjects[y, x].MainObj = new Block(Sym, "Wall", "SimStable", x, y, true); break;
-                case '│': MapObjects[y, x].MainObj = new Block(Sym, "Little Wall", "SimStable", x, y, true); break;
-                case '┐': MapObjects[y, x].MainObj = new Block(Sym, "Little Wall", "SimStable", x, y, true); break;
-                case '─': MapObjects[y, x].MainObj = new Block(Sym, "Little Wall", "SimStable", x, y, true); break;
-                case '‡': MapObjects[y, x].MainObj = new Block(Sym, "Hedge", "SimStable", x, y, true); break;
-                case 'W': MapObjects[y, x].MainObj = new Block(Sym, "Wood", "SimStable", x, y, true); break;
-                case 'O': MapObjects[y, x].MainObj = new Block(Sym, "Window", "SimStable", x, y, true); break;
-                case '▓': MapObjects[y, x].MainObj = new Block(Sym, "Table", "SimStable", x, y, true); break;
-                case '▒': MapObjects[y, x].MainObj = new Block(Sym, "Sitting Place", "SimStable", x, y, false); break;
-                case '█': MapObjects[y, x].MainObj = new Block(Sym, "Furniture", "SimStable", x, y, true); break;
-                case '▄': MapObjects[y, x].MainObj = new Block(Sym, "Furniture", "SimStable", x, y, true); break;
-                case '¤': MapObjects[y, x].MainObj = new Block(Sym, "TV", "SimStable", x, y, true); break;
-                //============================================================================================= Движимые объекты
-                case 'h': MapObjects[y, x].MainObj = new Block(Sym, "Chair", "SimpleMov", x, y, true); break;
-                case '■': MapObjects[y, x].MainObj = new Block(Sym, "Box", "SimpleMov", x, y, true); break;
-                //============================================================================================= Персонажи
-                case 'X': Program.Hero = new Person(Sym, "Hero", x, y, BaseGroups.GrHero); break;
-                case 'Y': MapObjects[y, x].Dude = new Person(Sym, "Friend", x, y, BaseGroups.GrFriends); MapObjects[y, x].Dude.Inv.RightHand = new Stuff("Stick", MapObjects[y, x].Dude, "Weapon", 2, 1); break;
-                case 'Z': MapObjects[y, x].Dude = new Person(Sym, "Enemy", x, y, BaseGroups.GrEnemies); MapObjects[y, x].Dude.Inv.RightHand = new Stuff("Stick", MapObjects[y, x].Dude, "Weapon", 2, 1); break;
 
-                //============================================================================================= Фоновые объекты
-                case ' ': MapObjects[y, x].BG = new BackGround(Sym, "Ground",  x, y, false); break;             
-                case '«': MapObjects[y, x].BG = new BackGround(Sym, "Grass",  x, y, false); break;
-                case '░': MapObjects[y, x].BG = new BackGround(Sym, "Water",  x, y, true); break;
-                case 'Ж': MapObjects[y, x].BG = new Home(Sym, "Closed Door", x, y, true, true,new List<Person>(){ new Person('Y', "Vano", x, y, BaseGroups.GrFriends), new Person('Y', "Denchik", x, y, BaseGroups.GrFriends) }); break;
-                case 'Щ': MapObjects[y, x].BG = new Door(Sym, "Closed Door", x, y, true, true); break;
-                case 'Ш': MapObjects[y, x].BG = new Door(Sym, "Closed Door", x, y, true, false); break;
-                //case 'П': MapObjects[y, x].BG = new Door(Sym, "Opened Door", x, y, false); break;
-                case '<': MapObjects[y, x].BG = new BackGround(Sym, "Automatic Door", x, y, false); break;
-                case '>': MapObjects[y, x].BG = new BackGround(Sym, "Automatic Door", x, y, false); break;
-                case 'u': MapObjects[y, x].BG = new BackGround(Sym, "Stair", x, y, false); break;
-                //============================================================================================= Маскировочные, верхние объекты
-                case 'z': MapObjects[y, x].TopObject = new Roof(Sym, "Leafage",  x, y); break;
+            if (editor.baseSymTable[Sym] != null) {
+                Objects obj = editor.baseSymTable[Sym];
+                obj.x = x;
+                obj.y = y;
 
-                default: MapObjects[y, x].PocketObj.Add(new Stuff("Unindent.", x, y, "Simple", 0, 0)); break;
+                if (obj is Hero)
+                {
+                    Program.Hero = (Hero)obj;
+                    MapObjects[y, x].Dude = (Hero)obj;
+                }
+                if (obj is Block)
+                { Block a = (Block)((Block)obj).DeepCopy();
+                    MapObjects[y, x].MainObj = a; }
 
-            }        
+                else if (obj is Person && !(obj is Hero))
+                { MapObjects[y, x].Dude = (Person)((Person)obj).DeepCopy();
+                MapObjects[y, x].Dude.humanAI.StartThinking(); }
+            else if (obj is BackGround)
+                MapObjects[y, x].BG = (BackGround)((BackGround)obj).DeepCopy();
+            else if (obj is Door)
+                MapObjects[y, x].BG = (Door)((Door)obj).DeepCopy();
+            else if (obj is Door)
+                MapObjects[y, x].BG = (Home)((Home)obj).DeepCopy();
+            else if (obj is Roof)
+                MapObjects[y, x].TopObject = (Roof)((Roof)obj).DeepCopy();
+            else if (obj is Stuff)
+                MapObjects[y, x].PocketObj.Add((Stuff)((Stuff)obj).DeepCopy());
+            }
+            else
+            { MapObjects[y, x].PocketObj.Add(new Stuff("Unindent.", x, y, "Simple", 0, 0)); }
+            
         }
-
 
         //Получение информации о карте
         public void GetTopView() // По массиву объектов получаем вид сверху

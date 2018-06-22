@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Test
 {
@@ -28,12 +31,13 @@ namespace Test
             Methods = new List<Acts>();
         }
 
-        //Общие методы
+         //Общие методы
         public virtual void ShowMethods()
         {
             string text = "It's a " + Name;
             Program.mainDialog.SetDialog(text, Methods);
         }
+
     }
 
         //Интерфейсы
@@ -56,7 +60,7 @@ namespace Test
 
     //===============================================Свойства земли
     [Serializable()]
-    public class BackGround : Objects  
+    public class BackGround : Objects  , ICloneable
     {
         //Конструктор фоновых объектов
         public BackGround(char symbol, string Name, int x, int y,  bool isBlock) : base(Name, x, y)
@@ -65,12 +69,33 @@ namespace Test
             this.isBlock = isBlock;
             this.symbol = symbol;
         }
+        public object Clone()
+        {
+            return MemberwiseClone();
+            //new BackGround(symbol, Name, x, y, isBlock);
+        }
+
+        public object DeepCopy()
+        {
+            object figure = null;
+            using (MemoryStream tempStream = new MemoryStream())
+            {
+                BinaryFormatter binFormatter = new BinaryFormatter(null,
+                    new StreamingContext(StreamingContextStates.Clone));
+
+                binFormatter.Serialize(tempStream, this);
+                tempStream.Seek(0, SeekOrigin.Begin);
+
+                figure = binFormatter.Deserialize(tempStream);
+            }
+            return figure;
+        }
 
     }
 
     //===============================================Свойства карманных предметов
     [Serializable()]
-    public class Stuff : Objects
+    public class Stuff : Objects, ICloneable
     {
         Action del;
         public string Type = "Simple";
@@ -102,7 +127,27 @@ namespace Test
             Methods.Add(new Acts("Equip", del = () => { Equip(); Program.Hero.Inv.ShowObj(); }));
             Methods.Add(new Acts("Discard", del = () => { Drop(); Program.Hero.Inv.ShowObj();}));
         }
-        
+        public object Clone()
+        {
+            return MemberwiseClone();
+            //return new Stuff(Name, x, y, Type, Quality, Cost);
+        }
+        public object DeepCopy()
+        {
+            object figure = null;
+            using (MemoryStream tempStream = new MemoryStream())
+            {
+                BinaryFormatter binFormatter = new BinaryFormatter(null,
+                    new StreamingContext(StreamingContextStates.Clone));
+
+                binFormatter.Serialize(tempStream, this);
+                tempStream.Seek(0, SeekOrigin.Begin);
+
+                figure = binFormatter.Deserialize(tempStream);
+            }
+            return figure;
+        }
+
         //Методы работы с инвентарем
         public void Take(Person Whom)
         {
@@ -155,19 +200,40 @@ namespace Test
         
     }
     //==============================================Свойства верхних предметов (крыши, листва, туман...)
-
-    public class Roof : Objects   
+    [Serializable()]
+    public class Roof : Objects, ICloneable   
     {
         public Roof(char symbol, string Name, int x, int y) : base(Name, x, y)
         {
             isBlock = false;
             this.symbol = symbol;
         }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+            //return new Roof(symbol, Name, x, +y);
+        }
+        public object DeepCopy()
+        {
+            object figure = null;
+            using (MemoryStream tempStream = new MemoryStream())
+            {
+                BinaryFormatter binFormatter = new BinaryFormatter(null,
+                    new StreamingContext(StreamingContextStates.Clone));
+
+                binFormatter.Serialize(tempStream, this);
+                tempStream.Seek(0, SeekOrigin.Begin);
+
+                figure = binFormatter.Deserialize(tempStream);
+            }
+            return figure;
+        }
     }
 
     //==============================================Свойства основных объектов
     [Serializable()]
-    public class Block : Objects, IHealth
+    public class Block : Objects, IHealth, ICloneable
     {
         public List<Acts> MoveMethods = new List<Acts>();
 
@@ -175,6 +241,28 @@ namespace Test
         public int MaxHealth =  40;
         public int CurHealth = 0;
         Action del;
+
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+            //return new Block(symbol, Name, Type, x, y, isBlock);
+        }
+        public object DeepCopy()
+        {
+            object figure = null;
+            using (MemoryStream tempStream = new MemoryStream())
+            {
+                BinaryFormatter binFormatter = new BinaryFormatter(null,
+                    new StreamingContext(StreamingContextStates.Clone));
+
+                binFormatter.Serialize(tempStream, this);
+                tempStream.Seek(0, SeekOrigin.Begin);
+
+                figure = binFormatter.Deserialize(tempStream);
+            }
+            return figure;
+        }
 
         //Конструктор объекта
         public Block(char symbol, string Name, string Type, int x, int y, bool isBlock) : base(Name, x, y)
@@ -272,7 +360,7 @@ namespace Test
 
     //=============================================Свойства персонажей
     [Serializable()]
-    public class Person : Objects, IHealth
+    public class Person : Objects, ICloneable, IHealth
     {
         Action del;
         public AI humanAI;
@@ -291,6 +379,34 @@ namespace Test
         public Journal journal;
         public Perk Perks;
 
+        public object Clone()
+        {
+            return new Person(symbol, Name, x, y, group);
+        }
+
+        public object Clone(string Name)
+        {
+            Person person = new Person(symbol, Name, x, y, group);
+            person.Name = Name;
+            return person;
+        }
+
+        public object DeepCopy()
+        {
+            object figure = null;
+            using (MemoryStream tempStream = new MemoryStream())
+            {
+                BinaryFormatter binFormatter = new BinaryFormatter(null,
+                    new StreamingContext(StreamingContextStates.Clone));
+
+                binFormatter.Serialize(tempStream, this);
+                tempStream.Seek(0, SeekOrigin.Begin);
+
+                figure = binFormatter.Deserialize(tempStream);
+            }
+            return figure;
+        }
+
         //Конструктор человека
         public Person(char symbol, string Name, int x, int y, Politics group) : base(Name, x, y)
         {
@@ -304,9 +420,9 @@ namespace Test
             Info = new List<Acts>();
             Action del;
 
+            humanAI = new AI(this, Perks.CurAbils.Inteligence);
             if (Name != "Hero")
             {
-                humanAI = new AI(this, Perks.CurAbils.Inteligence);
                 humanAI.StartThinking();
             }
             Methods.Add(new Acts("Info", del = Explore));

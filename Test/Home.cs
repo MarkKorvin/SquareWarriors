@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Test
 {
-
+    [Serializable()]
     class Home : Door
     {
 
@@ -24,10 +24,8 @@ namespace Test
             this.isKeyNeeded = isKeyNeeded;
 
             Methods.Add(new Acts("Knock-knock", del = Call));
-
         }
 
-       
         public void AddDweller(Person dweller)
         {
             dwellers.Add(dweller);
@@ -37,7 +35,12 @@ namespace Test
         {
             dwellersInHome.Remove(dweller);
             Open();
-            Program.CurrentMap.MapObjects[y, x].Dude = dweller;
+            Program.CurrentMap.MapObjects[y, x].Dude = (Person)dweller.DeepCopy();
+            Program.CurrentMap.MapObjects[y, x].Dude.y = y;
+            Program.CurrentMap.MapObjects[y, x].Dude.x = x;
+
+            Program.CurrentMap.MapObjects[y, x].Dude.humanAI.StartThinking();
+            Program.CurrentMap.MapObjects[y, x].Dude.Say("I'm here!");
         }
 
         private void GoBack(Person dweller)
@@ -55,8 +58,8 @@ namespace Test
 
     }
 
-
-        class Door : BackGround
+    [Serializable()]
+    class Door : BackGround
         {
             public bool isKeyNeeded = false;
 

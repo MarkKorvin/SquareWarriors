@@ -92,7 +92,8 @@ namespace Test
 
     }
 
-     public class Abilities
+    [Serializable()]
+    public class Abilities
     {
         public Ability[,] perks;
         public int freePoints;
@@ -220,7 +221,7 @@ namespace Test
         }
     }
 
-
+    [Serializable()]
     public class Ability
     {
         public string AbilityName;
