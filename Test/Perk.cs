@@ -10,7 +10,7 @@ namespace Test
     [Serializable()]
     public class Perk
     {
-        int I, J;//номер выбранной абилки
+        int I; //номер выбранной абилки
         private char[,] basePerk;
         List<Acts> Acts = new List<Acts>();
         Action del;

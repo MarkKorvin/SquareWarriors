@@ -45,7 +45,7 @@ namespace Test
         {
             if (CurrentMap != null)
             {
-                foreach (Map.Cell cell in CurrentMap.MapObjects)
+                foreach (MapCell cell in CurrentMap.MapObjects)
                 { if(cell.Dude!=null) cell.Dude.CurHealth = -100; }
             }
             CurrentMap = new Map(filename);
@@ -135,7 +135,7 @@ namespace Test
                     {
                         List < Person > flag = new List<Person>();
                         Hero.Say("Back!",25);//Громкость X :  обычный слух с трудом, но услышит звук с X клеток
-                        foreach (Map.Cell cell in CurrentMap.MapObjects)
+                        foreach (MapCell cell in CurrentMap.MapObjects)
                              if (cell.Dude != null && cell.Dude != Hero)
                                 if(Math.Max(Math.Abs(Hero.x - cell.Dude.x), Math.Abs(Hero.y - cell.Dude.y)) < 10)
                                   flag.Add(cell.Dude);
@@ -146,7 +146,7 @@ namespace Test
                     else if (e.key.Key == ConsoleKey.E)
                     {
                         Hero.Say("Follow me, Bros!", 25);//Громкость X :  обычный слух с трудом, но услышит звук с X клеток
-                        foreach (Map.Cell cell in CurrentMap.MapObjects)
+                        foreach (MapCell cell in CurrentMap.MapObjects)
                         {
                             if (cell.Dude != null && cell.Dude != Hero && Math.Max(Math.Abs(Hero.x - cell.Dude.x), Math.Abs(Hero.y - cell.Dude.y)) < 25 && Relations.relations[cell.Dude.group.number, BaseGroups.GrHero.number] == Relations.Relate.lovers) //     cell.Dude.Color == ConsoleColor.Cyan)
                             {

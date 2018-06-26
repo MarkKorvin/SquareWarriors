@@ -90,6 +90,7 @@ namespace Test
             missionSymTable.Add(sym, bg);
         }
 
+
         public void UniteTabs()
         {
             foreach (KeyValuePair<char, Objects> pair in missionSymTable)

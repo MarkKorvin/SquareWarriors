@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Threading;
-
+using System.Collections;
 
 namespace Test
 {
@@ -16,78 +16,11 @@ namespace Test
         public int height;
         public int width;
         public char[,] mapField;
-        public Cell[,] MapObjects;
+        public MapCell[,] MapObjects;
         static private System.Timers.Timer aTimer = new System.Timers.Timer();
         public MapEditor editor;
-       
 
-        [Serializable()]
-        public struct Cell //Структура одной ячейки, из которых состоит карта
-        {
-            public BackGround BG;           //В ячейке есть фон
-            public List<Stuff> PocketObj;   // Есть набор переносных предметов
-            public Block MainObj ;          // Один большой объект
-            public Roof TopObject;          // Маскирующий объект
-            public Person Dude;             // И один человек
-            public bool hited;              //true когда по области ударили
-
-            public List<Acts> InThere()     //Содержимое ячейки
-            {
-                List<Acts> Acts = new List<Acts>();
-
-                Acts.Add(new Acts(BG.Name, BG.show));
-                if (Dude != null)
-                {
-                    Acts.Add(new Acts(Dude.Name, Dude.show));
-                }
-                if (TopObject != null)
-                {
-                    Acts.Add(new Acts(TopObject.Name, TopObject.show));
-                }
-                if (MainObj != null)
-                {
-                    Acts.Add(new Acts(MainObj.Name, MainObj.show));
-                }
-                if (PocketObj != null)
-                    foreach (Stuff x in PocketObj)
-                    {
-                        Acts.Add(new Acts(x.Name, x.show));
-                    }
-                return Acts;
-            }
-            public int ElemNumber()         //Количество объектов в ячейке.
-            {
-                int length = 1;
-                if (Dude != null)
-                { length++; }
-                if (TopObject != null)
-                { length++; }
-                if (MainObj != null)
-                { length++; }
-                if (PocketObj != null)
-                    foreach (Stuff x in PocketObj)
-                    { length++; }
-                return length;
-            }
-            public bool IsBlock()           //Является ли ячейка заблокированной
-            {
-                if ((BG!=null && BG.isBlock) || (MainObj!=null && MainObj.isBlock) || (Dude!=null && Dude.isBlock))
-                    return true;
-                else
-                    return false;
-            }
-            public bool IsBlockNotByBlock() //Если она заблокирована не объектом
-            {
-                if ((BG != null && BG.isBlock) || (Dude != null && Dude.isBlock))
-                    return true;
-                else
-                    return false;
-            }   
-
-        }
-        
-        //=========================================================================================== Код самой карты
-
+ 
         //Конструкторы карты
         public Map(string fileName) // Создать карту с помощью файла
         {
@@ -99,11 +32,11 @@ namespace Test
             aTimer.Elapsed += OnTimedEvent;
             aTimer.Enabled = true;
         }
-        
+
         //Вспомогательные методы для генерации карты
         public void GetMapFromFile(string fileName) //Метод читает указанный файл и переводит его в массив объектов
         {
-            string[] lines = File.ReadAllLines("Maps//"+fileName);
+            string[] lines = File.ReadAllLines("Maps//" + fileName);
 
             width = lines[0].Length;
             height = 0;
@@ -114,27 +47,28 @@ namespace Test
                 height++;
             }
 
-            if (height < lines.Length)//Заполняем всспомогательную таблицу объектов
+            if (height < lines.Length)//Заполняем всспомогательную таблицу объектов (добавляем объекты из редактора)
             {
-                for (int i = height+1; i < lines.Length; i++)
+                for (int i = height + 1; i < lines.Length; i++)
                 {
                     String[] data = lines[i].Split(' ');
-                    String[] data2 = new String[data.Length-4];
-                    Array.Copy(data,3, data2, 0, data.Length - 4);
-                    editor.AddToTable(data[0],data[1].ToCharArray()[0], data[2].ToCharArray()[0], data[3],data2);
+                    String[] data2 = new String[data.Length - 4];
+                    Array.Copy(data, 3, data2, 0, data.Length - 4);
+                    editor.AddToTable(data[0], data[1].ToCharArray()[0], data[2].ToCharArray()[0], data[3], data2);
                 }
             }
             editor.UniteTabs();
 
             char[,] curField = new char[height, width]; //Создаем основной массив символов
 
-            MapObjects = new Cell[height, width];
+            MapObjects = new MapCell[height, width];
             for (int k = 0; k < height; k++) //Переводим символы по всей высоте
             {
                 char[] tempArray = lines[k].ToCharArray();
                 for (int j = 0; j < width; j++)
                 {
                     curField[k, j] = lines[k][j];
+                    MapObjects[k, j] = new MapCell();
                     MapObjects[k, j].BG = new BackGround(' ', "Ground", j, k, false);
                     SymbolToObject(curField[k, j], j, k);
                 }
@@ -145,15 +79,12 @@ namespace Test
 
 
 
-
-
-
-
         public void SymbolToObject(char Sym, int x, int y) //Перевод символа в объект. В таблице ниже перечислены все известные объекты (Кроме переносимых, у которых одинаковый символ)
         {
             MapObjects[y, x].PocketObj = new List<Stuff> { };
 
-            if (editor.baseSymTable[Sym] != null) {
+            if (editor.baseSymTable[Sym] != null)
+            {
                 Objects obj = editor.baseSymTable[Sym];
                 obj.x = x;
                 obj.y = y;
@@ -164,26 +95,38 @@ namespace Test
                     MapObjects[y, x].Dude = (Hero)obj;
                 }
                 if (obj is Block)
-                { Block a = (Block)((Block)obj).DeepCopy();
-                    MapObjects[y, x].MainObj = a; }
+                {
+                    Block a = AddObject<Block>(obj);
+                    MapObjects[y, x].MainObj = a;
+                }
 
                 else if (obj is Person && !(obj is Hero))
-                { MapObjects[y, x].Dude = (Person)((Person)obj).DeepCopy();
-                MapObjects[y, x].Dude.humanAI.StartThinking(); }
-            else if (obj is BackGround)
-                MapObjects[y, x].BG = (BackGround)((BackGround)obj).DeepCopy();
-            else if (obj is Door)
-                MapObjects[y, x].BG = (Door)((Door)obj).DeepCopy();
-            else if (obj is Door)
-                MapObjects[y, x].BG = (Home)((Home)obj).DeepCopy();
-            else if (obj is Roof)
-                MapObjects[y, x].TopObject = (Roof)((Roof)obj).DeepCopy();
-            else if (obj is Stuff)
-                MapObjects[y, x].PocketObj.Add((Stuff)((Stuff)obj).DeepCopy());
+                {
+                    MapObjects[y, x].Dude = AddObject<Person>(obj); 
+                    MapObjects[y, x].Dude.humanAI.StartThinking();
+                }
+                else if (obj is BackGround)
+                {
+                    MapObjects[y, x].BG = AddObject<BackGround>(obj);
+                }
+
+                else if (obj is Door)
+                    MapObjects[y, x].BG = AddObject<Door>(obj); 
+                else if (obj is Door)
+                    MapObjects[y, x].BG = AddObject<Home>(obj); 
+                else if (obj is Roof)
+                    MapObjects[y, x].TopObject = AddObject<Roof>(obj); 
+                else if (obj is Stuff)
+                    MapObjects[y, x].PocketObj.Add(AddObject<Stuff>(obj)); 
             }
             else
             { MapObjects[y, x].PocketObj.Add(new Stuff("Unindent.", x, y, "Simple", 0, 0)); }
-            
+
+        }
+
+        public T AddObject<T>(Objects obj) where T: Objects
+        {
+            return (T)(obj).DeepCopy();
         }
 
         //Получение информации о карте
@@ -212,24 +155,93 @@ namespace Test
         //Эффекты ячейки
         public void GetHit(Person agressor, int damage, int x, int y)
         {
-            if (MapObjects[y, x].Dude != null)
-                MapObjects[y, x].Dude.TakeDamage(agressor, damage);
-            if (MapObjects[y, x].MainObj != null)
-                MapObjects[y, x].MainObj.TakeDamage(agressor, damage);
+            MapObjects[y, x].Dude?.TakeDamage(agressor, damage);
+            MapObjects[y, x].MainObj?.TakeDamage(agressor, damage);
 
             MapObjects[y, x].hited = true;
 
-            //Thread Hit = new Thread(() => { MapObjects[y, x].hited = true; Thread.Sleep(50); MapObjects[y, x].hited = false; });
-            //if (MapObjects[y, x].hited == false) 
-            //    Hit.Start();
         } //Ячейка под ударом
 
         private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
             for (int i = 0; i < Program.CurrentMap.height; i++)
                 for (int j = 0; j < Program.CurrentMap.width; j++)
-                    if(Program.CurrentMap.MapObjects[i, j].hited == true)
-                    Program.CurrentMap.MapObjects[i, j].hited = false;
+                    if (Program.CurrentMap.MapObjects[i, j].hited == true)
+                        Program.CurrentMap.MapObjects[i, j].hited = false;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    [Serializable()]
+    public class MapCell
+    {
+        public BackGround BG;           //В ячейке есть фон
+        public List<Stuff> PocketObj;   // Есть набор переносных предметов
+        public Block MainObj;          // Один большой объект
+        public Roof TopObject;          // Маскирующий объект
+        public Person Dude;             // И один человек
+
+        public bool hited;              //true когда по области ударили
+
+        public IEnumerator GetEnumerator()
+        {
+            List<Object> objects = new List<Object>();
+            objects.Add(BG);
+            objects.Add(PocketObj);
+            objects.Add(MainObj);
+            objects.Add(TopObject);
+            objects.Add(Dude);
+            return objects.GetEnumerator();
+        }
+
+        public List<Acts> InThere()     //Содержимое ячейки
+        {
+            List<Acts> Acts = new List<Acts>();
+
+            Acts.Add(new Acts(BG.Name, BG.show));
+            if (Dude != null)
+            {
+                Acts.Add(new Acts(Dude.Name, Dude.show));
+            }
+            if (TopObject != null)
+            {
+                Acts.Add(new Acts(TopObject.Name, TopObject.show));
+            }
+            if (MainObj != null)
+            {
+                Acts.Add(new Acts(MainObj.Name, MainObj.show));
+            }
+            if (PocketObj != null)
+                foreach (Stuff x in PocketObj)
+                {
+                    Acts.Add(new Acts(x.Name, x.show));
+                }
+            return Acts;
+        }
+
+       
+        public bool IsBlock()           //Является ли ячейка заблокированной
+        {
+            if ((BG != null && BG.isBlock) || (MainObj != null && MainObj.isBlock) || (Dude != null && Dude.isBlock))
+                return true;
+            else
+                return false;
+        }
+
+        public bool IsBlockNotByBlock() //Если она заблокирована не объектом
+        {
+            if ((BG != null && BG.isBlock) || (Dude != null && Dude.isBlock))
+                return true;
+            else
+                return false;
         }
     }
 }
