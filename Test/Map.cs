@@ -53,7 +53,7 @@ namespace Test
                 {
                     String[] data = lines[i].Split(' ');
                     String[] data2 = new String[data.Length - 4];
-                    Array.Copy(data, 3, data2, 0, data.Length - 4);
+                    Array.Copy(data, 4, data2, 0, data.Length - 4);
                     editor.AddToTable(data[0], data[1].ToCharArray()[0], data[2].ToCharArray()[0], data[3], data2);
                 }
             }
@@ -83,7 +83,7 @@ namespace Test
         {
             MapObjects[y, x].PocketObj = new List<Stuff> { };
 
-            if (editor.baseSymTable[Sym] != null)
+            if (editor.baseSymTable.ContainsKey(Sym) && editor.baseSymTable[Sym] != null)
             {
                 Objects obj = editor.baseSymTable[Sym];
                 obj.x = x;
@@ -95,21 +95,11 @@ namespace Test
                     MapObjects[y, x].Dude = (Hero)obj;
                 }
                 if (obj is Block)
-                {
-                    Block a = AddObject<Block>(obj);
-                    MapObjects[y, x].MainObj = a;
-                }
-
+                    MapObjects[y, x].MainObj = AddObject<Block>(obj);
                 else if (obj is Person && !(obj is Hero))
-                {
                     MapObjects[y, x].Dude = AddObject<Person>(obj); 
-                    MapObjects[y, x].Dude.humanAI.StartThinking();
-                }
                 else if (obj is BackGround)
-                {
                     MapObjects[y, x].BG = AddObject<BackGround>(obj);
-                }
-
                 else if (obj is Door)
                     MapObjects[y, x].BG = AddObject<Door>(obj); 
                 else if (obj is Door)

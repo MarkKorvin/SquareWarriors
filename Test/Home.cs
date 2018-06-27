@@ -16,8 +16,10 @@ namespace Test
 
         public Home(char symbol, string Name, int x, int y, bool isBlock, bool isKeyNeeded, List<Person> dwellers) : base(symbol, Name, x, y, isBlock, isKeyNeeded)
         {
-            this.dwellers = dwellers;
-            dwellersInHome = dwellers;
+            if(dwellers!=null)
+                this.dwellers = dwellers;
+
+            dwellersInHome = this.dwellers;
 
             this.isBlock = isBlock;
             this.symbol = symbol;
