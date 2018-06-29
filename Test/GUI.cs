@@ -102,7 +102,7 @@ namespace Test
                         }
                         else
                             Console.Write(' ');
-                    }
+                   }
                     catch (Exception ex)
                     { }
                 }

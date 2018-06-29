@@ -12,7 +12,7 @@ namespace Test
     public class AI
     {
         static public System.Timers.Timer aTimer = new System.Timers.Timer();      //таймер
-
+         
         Person Man;                                             //Человек, которому принадлежит данный АИ
         int SmartLevel;                                         //Уровень интеллекта
         int Reaction = 200;                                     //Задержка между действиями(мсек)
@@ -30,10 +30,10 @@ namespace Test
 
         public void StartThinking()                             //Запуск работы АИ
         {
-            aTimer.AutoReset = true;
-            aTimer = new System.Timers.Timer(Reaction);
-            aTimer.Elapsed += OnTimedEvent;
-            aTimer.Enabled = true;
+                aTimer.AutoReset = true;
+                aTimer = new System.Timers.Timer(Reaction);
+                aTimer.Elapsed += OnTimedEvent;
+                aTimer.Enabled = true;
         }
 
         public void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e) //По таймеру человек думает и делает дела
@@ -79,11 +79,61 @@ namespace Test
             }
             catch (Exception e) { }
         }
-        public void MoveTo(int x, int y)    //Поиск пути в отдельном потоке
+        public void MoveTo(int x, int y)    //Поиск пути в отдельном потоке (Какая-то хрень. Кто-то его очень часто вызывает)
         {
-            Thread WaySearching = new Thread(() => { A(x, y);});
-            WaySearching.Start();
-        } 
+                Thread WaySearching = new Thread(() => { A(x, y); });
+                WaySearching.Start();
+        }
+
+
+
+        public Cell FindWay(int x, int y)
+        {
+            Stack<Cell> WayMap = new Stack<Cell>();
+
+            Cell Start = new Cell(Man.x, Man.y);
+            Cell Goal = new Cell(x, y);
+            Cell current;
+            Cell key = null;
+
+            Queue<Cell> Frontier = new Queue<Cell>();
+            Dictionary<Cell, Cell> CameFrom = new Dictionary<Cell, Cell>();
+            CameFrom.Add(Start, null);
+
+            Frontier.Enqueue(Start);
+
+            //Проходим по фронту движения, смотрим куда можно двинуться (Потом нужно уменьшить до области видимости) 
+            while (Frontier.Count() > 0)
+            {
+                try
+                {
+                    current = Frontier.Dequeue();
+                    if (current.x == Goal.x && current.y == Goal.y) //Если нашли путь - идем
+                    {
+                        key = current;
+                        break;
+                    }
+
+                    else
+                    {
+                        foreach (Cell next in current.neighbors(Goal)) //Смотрим все соседние точки
+                        {
+                            if (UnicCell(CameFrom, next))    //Если еще не рассматривали точку
+                            {
+                                Frontier.Enqueue(next);      //Добавляем ее в список
+                                CameFrom.Add(next, current);
+                            }
+                        }
+                    }
+                }
+                catch (Exception e) { };
+            }
+
+            return key;
+        }
+
+
+
         public void A(int x,int y)   //Алгоритм поиска пути к цели
         {
             Stack<Cell> WayMap = new Stack<Cell>();
@@ -130,6 +180,7 @@ namespace Test
 
             if (key != null)//Если смогли найти путь
             {
+
                 while (key != Start) //Записываем путь в стек
                 {
                     WayMap.Push(CameFrom[key]);
@@ -137,8 +188,8 @@ namespace Test
                 }
 
                 Queue<int> Way = new Queue<int>(); //Переписываем координаты в последовательность шагов
-                Cell pos = new Cell(Man.x, Man.y); 
-                while (WayMap.Count > 0) 
+                Cell pos = new Cell(Man.x, Man.y);
+                while (WayMap.Count > 0)
                 {
                     Cell newpos = WayMap.Pop();
                     int xlong = pos.x - newpos.x;
@@ -184,6 +235,7 @@ namespace Test
                             if (map.MapObjects[i, j].Dude != null && map.MapObjects[i, j].Dude.CurHealth > 0)
                                 if (Relations.relations[map.MapObjects[i, j].Dude.group.number, Man.group.number] == Relations.Relate.haters)
                                 {
+                                    if(FindWay(map.MapObjects[i, j].Dude.x, map.MapObjects[i, j].Dude.y)!=null)
                                     targets.Add(new Aggro(map.MapObjects[i, j].Dude, 0, 1));
                                 }
                         }

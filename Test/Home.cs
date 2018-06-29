@@ -35,14 +35,21 @@ namespace Test
 
         private void GoOut(Person dweller)
         {
-            dwellersInHome.Remove(dweller);
-            Open();
-            Program.CurrentMap.MapObjects[y, x].Dude = (Person)dweller.DeepCopy();
-            Program.CurrentMap.MapObjects[y, x].Dude.y = y;
-            Program.CurrentMap.MapObjects[y, x].Dude.x = x;
+            if (Program.CurrentMap.MapObjects[y, x].Dude == null)
+            {
+                dwellersInHome.Remove(dweller);
+                Open();
+                Program.CurrentMap.MapObjects[y, x].Dude = (Person)dweller.DeepCopy();
+                Program.CurrentMap.MapObjects[y, x].Dude.y = y;
+                Program.CurrentMap.MapObjects[y, x].Dude.x = x;
 
-            Program.CurrentMap.MapObjects[y, x].Dude.humanAI.StartThinking();
-            Program.CurrentMap.MapObjects[y, x].Dude.Say("I'm here!");
+                Program.CurrentMap.MapObjects[y, x].Dude.humanAI.StartThinking();
+                Program.CurrentMap.MapObjects[y, x].Dude.Say("I'm here!",10);
+            }
+            else
+            {
+                dweller.Say("I can't get out!");
+            }
         }
 
         private void GoBack(Person dweller)

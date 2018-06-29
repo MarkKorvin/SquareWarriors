@@ -6,15 +6,15 @@
 ░                                                                   ║          ▒▒║              ░
 ░                                                                   ║    █ █ █   ║              ░
 ░                  ╔═════════════════╦═══Щ═══╦══════════════════════╩══Ж═══╦═════╣              ░
-░                  ║  p              ║       ║█▄▄▄▄█ █ █        h          Ш     ║              ░
-░                  ║                 Ш       Ш                             ╠═════╣              ░
-░                  ║                 ║       ║   Y                         ║     ║              ░
+░                  ║  p           p  ║       ║█▄▄▄▄█ █ █        h          Ш     ║              ░
+░                  ║         p       Ш       Ш                             ╠═════╣              ░
+░                  ║   p             ║       ║   Y                         ║     ║              ░
 ░                  ╚══╦══<>══╗──┐uu╔═╩═══════╬══════Ш══╦══Ш══════════╗     Ш     ║              ░
 ░                     ║      ║uu│uu║         ║█ ¤ █   h║     █ ¤ █   ╠═Ш═══╩═════╣              ░
 ░                     ║  X   ║uu│uu║         ║▄      ▓▓║             ║           ║              ░
 ░                     ╠══════╝uu│uu║         ║▄      ▓▓║             ║     ▒▒▒▒▒▓║              ░
 ░                     ║            ║         ║▄       h║       Б     ║     ▒▒▒▒▒▒║              ░
-░                     ║            ║         ║▄        ║             ║     ▒▒▒▒▒▓║              ░
+░                     ║ Ъ          ║         ║▄        ║             ║     ▒▒▒▒▒▓║              ░
 ░                     ╚═════════O══╝         ║        █║             ║           ║              ░
 ░                                            ╚══O══════╬═══════O══Ш══╬══O════════╝              ░
 ░                                                      ║             ║                          ░
@@ -23,5 +23,13 @@
 ░                                                                                               ░
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 <objects>
-BG p y newBG
-Person Б Б Бомж Charisma=7 Inteligence=2 Strength=5 Agility=2 Level=28 Health=500 Enemy
+BG p _ Dust
+
+Person Y Y Ванек Charisma=2 Inteligence=1 Strength=1 Agility=2 Level=1 Health=100 Friend
+^ Stuff s s Stick Weapon Quality=2
+Person Б Б Бомж_Босс Charisma=3 Inteligence=1 Strength=5 Agility=2 Level=8 Health=500 Enemy
+
+BG Ъ Ж Дом_Бомжа Home IsBlock
+^ Person Z б Бомж_1 Charisma=2 Level=4 Health=200
+^ ^ Stuff s s Bottle Weapon Quality=2 Cost=3
+^ Person Z б Бомж_2 Agility=2 Level=2 Health=250

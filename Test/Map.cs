@@ -51,10 +51,8 @@ namespace Test
             {
                 for (int i = height + 1; i < lines.Length; i++)
                 {
-                    String[] data = lines[i].Split(' ');
-                    String[] data2 = new String[data.Length - 4];
-                    Array.Copy(data, 4, data2, 0, data.Length - 4);
-                    editor.AddToTable(data[0], data[1].ToCharArray()[0], data[2].ToCharArray()[0], data[3], data2);
+                    if(lines[i].Count()>1)
+                    editor.LineToMas(lines[i]);
                 }
             }
             editor.UniteTabs();
@@ -97,15 +95,19 @@ namespace Test
                 if (obj is Block)
                     MapObjects[y, x].MainObj = AddObject<Block>(obj);
                 else if (obj is Person && !(obj is Hero))
-                    MapObjects[y, x].Dude = AddObject<Person>(obj); 
+                {
+                    MapObjects[y, x].Dude = AddObject<Person>(obj);
+                    MapObjects[y, x].Dude.humanAI.StartThinking();
+                }
+
                 else if (obj is BackGround)
                     MapObjects[y, x].BG = AddObject<BackGround>(obj);
                 else if (obj is Door)
-                    MapObjects[y, x].BG = AddObject<Door>(obj); 
+                    MapObjects[y, x].BG = AddObject<Door>(obj);
                 else if (obj is Door)
-                    MapObjects[y, x].BG = AddObject<Home>(obj); 
+                    MapObjects[y, x].BG = AddObject<Home>(obj);
                 else if (obj is Roof)
-                    MapObjects[y, x].TopObject = AddObject<Roof>(obj); 
+                    MapObjects[y, x].TopObject = AddObject<Roof>(obj);
                 else if (obj is Stuff)
                     MapObjects[y, x].PocketObj.Add(AddObject<Stuff>(obj)); 
             }

@@ -10,8 +10,12 @@ namespace Test
 {
     public class  MapEditor
     {
+        
         public Dictionary<char,Objects> baseSymTable = new Dictionary<char, Objects>();
         public Dictionary<char, Objects> missionSymTable = new Dictionary<char, Objects>();
+
+        private Objects[] objects = new Objects[100];
+        private int count = 0;
 
         public MapEditor()
         {
@@ -43,8 +47,8 @@ namespace Test
             baseSymTable.Add('■', new Block('■', "Box", "SimpleMov", 0, 0, true));
             //============================================================================================= Персонажи
             baseSymTable.Add('X', new Hero('X', "Hero", 0, 0, BaseGroups.GrHero));
-            baseSymTable.Add('Y', new Person('Y', "Friend", 0, 0, BaseGroups.GrFriends));
-            baseSymTable.Add('Z', new Person('Z', "Enemy", 0, 0, BaseGroups.GrEnemies));
+            //baseSymTable.Add('Y', new Person('Y', "Friend", 0, 0, BaseGroups.GrFriends));
+            //baseSymTable.Add('Z', new Person('Z', "Enemy", 0, 0, BaseGroups.GrEnemies));
 
             //============================================================================================= Фоновые объекты
             baseSymTable.Add(' ', new BackGround(' ', "Ground", 0, 0, false));
@@ -63,8 +67,35 @@ namespace Test
         }
 
 
+        public void LineToMas(string line)
+        {
+            List<string> str = line.Split(' ').ToList();
+            List<string> str2 = str.GetRange(0,str.Count) ;
 
-        public void AddBlock(char sym, char realSym, string Name, string[] data)
+            foreach (string word in str)
+                if (word == "^")
+                    count++;
+
+            str2.RemoveRange(0,count+4);
+            AddToTable(str[count], str[count+1].ToCharArray()[0], str[count+2].ToCharArray()[0], str[count+3], str2);
+        }
+
+
+        public void AddToTable(string type, char sym, char realSym, string Name, List<string> data)
+        {
+            switch (type)
+            {
+                case "Person": { if (count == 0) Array.Clear(objects, 0, objects.Length); AddPerson(sym, realSym, Name, data); break; }
+                case "Block": { if (count == 0) Array.Clear(objects, 0, objects.Length); AddBlock(sym, realSym, Name, data);  break; }
+                case "BG": { if (count == 0) Array.Clear(objects, 0, objects.Length); AddBG(sym, realSym, Name, data);  break; }
+                case "Stuff": { if (count == 0) Array.Clear(objects, 0, objects.Length); AddStuff(sym, realSym, Name, data); break; }
+
+            }
+        }
+
+        //--------------------------------------------------------
+
+        public void AddBlock(char sym, char realSym, string Name, List<string> data) //Добавление блока
         {
             Block block = new Block(realSym, Name, "SimStable", 0, 0, true);
 
@@ -81,42 +112,86 @@ namespace Test
                 }
             
             missionSymTable.Add(sym, block);
+            objects[count] = block;
+            count = 0;
         }
 
-        public void AddPerson(char sym, char realSym, string Name, string[] data)
+        //--------------------------------------------------------
+
+        public void AddPerson(char sym, char realSym, string Name, List<string> data)//Добавление персонажа
         {
             Person person = new Person(realSym, Name, 0, 0, BaseGroups.GrFriends);
+
+                foreach (string tag in data)
+                    switch (tag)
+                    {
+                        case ("Friend"): person.group = BaseGroups.GrFriends; break;
+                        case ("Enemy"): person.group = BaseGroups.GrEnemies; break;
+
+                        case var someVal when new Regex(@"Health").IsMatch(tag): person.MaxHealth = GetNumeric(tag); break;
+
+                        case var someVal when new Regex(@"Charisma").IsMatch(tag): person.Perks.CurAbils.Charisma = GetNumeric(tag); break;
+                        case var someVal when new Regex(@"Agility").IsMatch(tag): person.Perks.CurAbils.Agility = GetNumeric(tag); break;
+                        case var someVal when new Regex(@"Inteligence").IsMatch(tag): person.Perks.CurAbils.Inteligence = GetNumeric(tag); break;
+                        case var someVal when new Regex(@"Strength").IsMatch(tag): person.Perks.CurAbils.Strength = GetNumeric(tag); break;
+
+                        case var someVal when new Regex(@"Level").IsMatch(tag):
+                            int lvl = 1;
+                            int newLvl = GetNumeric(tag);
+                            while (lvl < newLvl)
+                            {
+                                person.LevelUp(false);
+                                lvl++;
+                            }
+                            break;
+
+                        default: break;
+                    }
+
+            if (count == 0)
+                { missionSymTable.Add(sym, person); }
+
+            else if (objects[count - 1] is BackGround)
+            {
+                ((Home)objects[count - 1]).AddDweller(person);
+            }
+
+            objects[count] = person;
+            count = 0;
+        }
+        //--------------------------------------------------------
+
+        public void AddStuff(char sym, char realSym, string Name, List<string> data)//Добавление переносного объекта
+        {
+            Stuff stuff = new Stuff(Name, 0, 0, "Simple", 0, 0);
 
             foreach (string tag in data)
                 switch (tag)
                 {
-                    case ("Friend"): person.group = BaseGroups.GrFriends; break;
-                    case ("Enemy"):person.group = BaseGroups.GrEnemies; break;
-
-                    case var someVal when new Regex(@"Health").IsMatch(tag): person.MaxHealth = GetNumeric(tag); break;
-
-                    case var someVal when new Regex(@"Charisma").IsMatch(tag): person.Perks.CurAbils.Charisma = GetNumeric(tag); break;
-                    case var someVal when new Regex(@"Agility").IsMatch(tag): person.Perks.CurAbils.Agility = GetNumeric(tag); break;
-                    case var someVal when new Regex(@"Inteligence").IsMatch(tag): person.Perks.CurAbils.Inteligence = GetNumeric(tag); break;
-                    case var someVal when new Regex(@"Strength").IsMatch(tag): person.Perks.CurAbils.Strength = GetNumeric(tag); break;
-
-                    case var someVal when new Regex(@"Level").IsMatch(tag):
-                        int lvl = 1;
-                        int newLvl = GetNumeric(tag);
-                        while (lvl < newLvl)
-                        {
-                            person.LevelUp();
-                            lvl++;
-                        }
-                        break;
+                    case var someVal when new Regex(@"Quality").IsMatch(tag): stuff.Quality = GetNumeric(tag); break;
+                    case var someVal when new Regex(@"Cost").IsMatch(tag): stuff.Cost = GetNumeric(tag); break;
+                    case "Weapon": stuff.Type = tag; break;
+                    case "OffWeapon": stuff.Type = tag; break;
+                    case "Dress": stuff.Type = tag; break;
+                    case "Accessory": stuff.Type = tag; break;
 
                     default: break;
                 }
 
-            missionSymTable.Add(sym, person);
-        }
+            if (count == 0)
+            { missionSymTable.Add(sym, stuff); }
 
-        public void AddBG(char sym, char realSym, string Name, string[] data)
+            else if (objects[count - 1] is Person)
+            {
+                stuff.Take((Person)objects[count - 1]);
+            }
+
+            objects[count] = stuff;
+            count = 0;
+        }
+        //--------------------------------------------------------
+
+        public void AddBG(char sym, char realSym, string Name, List<string> data)//Добавление бэкграунда
         {
             BackGround bg = new BackGround(realSym, Name, 0, 0, false);
 
@@ -135,29 +210,21 @@ namespace Test
                 }
 
             missionSymTable.Add(sym, bg);
+            objects[count] = bg;
+            count = 0;
         }
 
+        //--------------------------------------------------------
 
 
 
 
 
 
-        public void AddToTable(string type, char sym, char realSym, string Name, string[] data)
-        {
-            switch (type)
-            {
-                case "Person": { AddPerson(sym, realSym, Name, data); break; }
-                case "Block": { AddBlock(sym, realSym, Name, data); break; }
-                case "BG": { AddBG(sym, realSym, Name, data); break; }
-            }
-        }
         public int GetNumeric(string word)
         {
             return Int32.Parse(word.Split('=').Last<string>());
         }
-
-
 
 
         public void UniteTabs()

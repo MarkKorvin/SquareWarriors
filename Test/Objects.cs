@@ -135,15 +135,16 @@ namespace Test
             if (Owner.Inv.FirstNotNull() >= 0)
             {
                 Owner.Inv.Pocket[Owner.Inv.FirstNotNull()] = this;
-                Program.CurrentMap.MapObjects[y, x].PocketObj.Remove(this);
-             //   try
+                Program.CurrentMap?.MapObjects[y, x]?.PocketObj?.Remove(this);
+             
                 {
                     Methods.Clear(); //RemoveAt(Methods.FindIndex(x => x.ActInfo == "Take"));
                     Methods.Add(new Acts("Leave", del = () => { Program.Hero.Inv.ShowObj(); }));
                     if(Type =="Weapon" || Type == "OffWeapon" || Type == "Dress" || Type == "Accessory") Methods.Add(new Acts("Equip", del = () => { Equip(); Program.Hero.Inv.ShowObj(); }));
                     Methods.Add(new Acts("Discard", del = () => { Drop(); Program.Hero.Inv.ShowObj(); }));
                 }
-             //   catch { }
+                EquipIfEmpty();
+             
             }
         }   //Надо все эти методы переделать в методы персонажа
         public void Drop()
@@ -164,6 +165,7 @@ namespace Test
             Methods.Add(new Acts("Info", del = () => { Program.Helper.Say("This is - " + Name + ", Type - " + Type + ", Quality - " + Quality + ", Price - " + Cost); Program.mainDialog.SetDialog("You see:", Program.CurrentMap.GetObjInfo(Program.Hero.x, Program.Hero.y)); }));
             //  Program.SecondWindow = Program.Hero.Inv.InventoryGet();
         }   //Этот переделан
+
         public void Equip()
         {
             Stuff buf;
@@ -177,7 +179,19 @@ namespace Test
                 default: break;
             }
         }
-        
+        public void EquipIfEmpty()
+        {
+            Inventory inv = Owner.Inv;
+            switch (Type)
+            {
+                case "Weapon": if (inv.RightHand == null) { inv.RightHand = this; inv.Pocket[Array.IndexOf(inv.Pocket, this)] = null; } break;
+                case "OffWeapon":if (inv.LeftHand == null) {  inv.LeftHand = this; inv.Pocket[Array.IndexOf(inv.Pocket, this)] = null; } break;
+                case "Dress":if (inv.Dress == null) { inv.Dress = this; inv.Pocket[Array.IndexOf(inv.Pocket, this)] = null;  } break;
+                case "Accessory":if (inv.Accessory == null) {  inv.Accessory = this; inv.Pocket[Array.IndexOf(inv.Pocket, this)] = null; } break;
+                default: break;
+            }
+        }
+
     }
     //==============================================Свойства верхних предметов (крыши, листва, туман...)
     [Serializable()]
@@ -359,9 +373,9 @@ namespace Test
             Action del;
 
             humanAI = new AI(this, Perks.CurAbils.Inteligence);
-            if (Name != "Hero")
+            if (Name != "Hero" && Name != "Helper")
             {
-                humanAI.StartThinking();
+               // humanAI.StartThinking();
             }
             Methods.Add(new Acts("Info", del = Explore));
 
@@ -482,15 +496,15 @@ namespace Test
             while (exp >= NeededExp())
             {
                 exp -= NeededExp();
-                LevelUp();
+                LevelUp(true);
             }
         }
-        public void LevelUp()
+        public void LevelUp(bool say)
         {
             level++;
             Perks.CurAbils.freePoints ++;
             Perks.CurAbils.perks[3, 3].AbilityLevel ++;
-            Program.Helper.Say(Name+" achieved level "+level+"!");
+            if(say) Program.Helper.Say(Name+" achieved level "+level+"!");
         }
         
         //Для глобальных сообщений

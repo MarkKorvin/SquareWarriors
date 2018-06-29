@@ -134,10 +134,11 @@ namespace Test
                     else if (e.key.Key == ConsoleKey.R)                              
                     {
                         List < Person > flag = new List<Person>();
-                        Hero.Say("Back!",25);//Громкость X :  обычный слух с трудом, но услышит звук с X клеток
+                        int loud = 3;
+                        Hero.Say("Back!",3);//Громкость X :  обычный слух с трудом, но услышит звук с X клеток
                         foreach (MapCell cell in CurrentMap.MapObjects)
-                             if (cell.Dude != null && cell.Dude != Hero)
-                                if(Math.Max(Math.Abs(Hero.x - cell.Dude.x), Math.Abs(Hero.y - cell.Dude.y)) < 10)
+                             if (cell.Dude != null && cell.Dude != Hero && Relations.relations[cell.Dude.group.number,Hero.group.number]!=Relations.Relate.haters)
+                                if(Math.Max(Math.Abs(Hero.x - cell.Dude.x), Math.Abs(Hero.y - cell.Dude.y)) < loud)
                                   flag.Add(cell.Dude);
                         foreach(Person man in flag)
                              if (Hero.x - man.x > 0) man.MoveLeft();
