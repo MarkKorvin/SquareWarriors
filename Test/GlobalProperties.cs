@@ -13,6 +13,7 @@ namespace Test
     [Serializable()]
     static class GlobalProperties
     {
+
         //=======================================  Параметры мира  =============== 
 
         static public int dayMinute = 48;   //Сколько минут идут одни сутки                            
@@ -23,6 +24,8 @@ namespace Test
         static public void ShowMenu()
         {
             MenuMethods.Clear();
+
+
             MenuMethods.Add(new Acts("Main Menu", del = () => { Program.Window = Program.Windows.menu; MainMenu.ShowMenu(); }));
             MenuMethods.Add(new Acts("Save", del = Save));
             MenuMethods.Add(new Acts("Load", del = Load));

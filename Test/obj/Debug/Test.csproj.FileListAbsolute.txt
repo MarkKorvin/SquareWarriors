@@ -19,3 +19,10 @@ K:\Сотрудники\Морковин Александр\Рабочий ст�
 K:\Сотрудники\Морковин Александр\Рабочий стол\DjVuReader.2.0.0.27\SquareWarriors-master\Test\obj\Debug\Test.csproj.CoreCompileInputs.cache
 K:\Сотрудники\Морковин Александр\Рабочий стол\DjVuReader.2.0.0.27\SquareWarriors-master\Test\obj\Debug\Test.exe
 K:\Сотрудники\Морковин Александр\Рабочий стол\DjVuReader.2.0.0.27\SquareWarriors-master\Test\obj\Debug\Test.pdb
+C:\Users\alexander.morkovin\Source\Repos\SquareWarriors\Test\bin\Debug\Test.exe.config
+C:\Users\alexander.morkovin\Source\Repos\SquareWarriors\Test\bin\Debug\Test.exe
+C:\Users\alexander.morkovin\Source\Repos\SquareWarriors\Test\bin\Debug\Test.pdb
+C:\Users\alexander.morkovin\Source\Repos\SquareWarriors\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
+C:\Users\alexander.morkovin\Source\Repos\SquareWarriors\Test\obj\Debug\Test.csproj.CoreCompileInputs.cache
+C:\Users\alexander.morkovin\Source\Repos\SquareWarriors\Test\obj\Debug\Test.exe
+C:\Users\alexander.morkovin\Source\Repos\SquareWarriors\Test\obj\Debug\Test.pdb

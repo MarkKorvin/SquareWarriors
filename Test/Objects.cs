@@ -12,6 +12,7 @@ namespace Test
     [Serializable()]
     public abstract class Objects: IDeepCopy
     {
+
         public int x;                 //Текущие координаты персонажа
         public int y;
         public char symbol;

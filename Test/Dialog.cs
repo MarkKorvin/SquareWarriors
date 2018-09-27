@@ -10,6 +10,8 @@ namespace Test
     public class Dialog
     {
         public List<Acts> Actions = null;
+
+
         public List<Acts> prevActions = null;
         public Acts TabAction = null;
         public string DialogText;
