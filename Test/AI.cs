@@ -12,7 +12,7 @@ namespace Test
     public class AI
     {
         static public System.Timers.Timer aTimer = new System.Timers.Timer();      //таймер
-        //params
+
         Person Man;                                             //Человек, которому принадлежит данный АИ
         int SmartLevel;                                         //Уровень интеллекта
         int Reaction = 200;                                     //Задержка между действиями(мсек)
