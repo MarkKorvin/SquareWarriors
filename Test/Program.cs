@@ -284,8 +284,8 @@ namespace Test
             };
             //----------------------------------------------------------------------------
 
-            Thread drawThread = new Thread(DrawInTime);
-            drawThread.Start();
+            Task drawTask = new Task(DrawInTime);
+            drawTask.Start();
 
             aTimer.AutoReset = true;
             aTimer = new System.Timers.Timer(1000 * GlobalProperties.dayMinute / 24);

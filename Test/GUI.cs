@@ -158,7 +158,7 @@ namespace Test
                 Console.WriteLine(edge);
                 for (int i = 0; i < Math.Min(LogHeight - 5, Program.logData.Count()); i++)
                 {
-                    string[] NameAndText = Program.logData.ElementAt(i).Split(':');
+                    string[] NameAndText = Program.logData?.ElementAt(i).Split(':');
                     if (NameAndText.Length > 1)
                     {
                         Console.ForegroundColor = Program.logColors.ElementAt(i);

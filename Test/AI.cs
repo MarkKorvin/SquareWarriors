@@ -42,7 +42,7 @@ namespace Test
             {
                 //Man.Heal(Man.Regeneration); // Можно конечно создать дополнительный таймер, но пусть пока будет так
                 
-               // Thread Warden = new Thread(() => { WardenStyle(); });
+               // Task Warden = new Task(() => { WardenStyle(); });
                // Warden.Start();//Промеряем местность на наличие врагов
                 WardenStyle();
                 if (targets.Count > 0)
@@ -222,7 +222,6 @@ namespace Test
             int leftx = Man.x - Man.ViewLength;
             int topy = Man.y - Man.ViewLength;
 
-            //targets = new List<Aggro>();
             try
             {
                 if (targets.Count == 0)
@@ -233,11 +232,15 @@ namespace Test
                         for (int j = Math.Max(leftx,0); j < Math.Min(leftx + 2 * Man.ViewLength + 1, map.mapField.GetLength(1)); j++)
                         {
                             if (map.MapObjects[i, j].Dude != null && map.MapObjects[i, j].Dude.CurHealth > 0)
+                            {
                                 if (Relations.relations[map.MapObjects[i, j].Dude.group.number, Man.group.number] == Relations.Relate.haters)
                                 {
-                                    if(FindWay(map.MapObjects[i, j].Dude.x, map.MapObjects[i, j].Dude.y)!=null)
-                                    targets.Add(new Aggro(map.MapObjects[i, j].Dude, 0, 1));
+                                    if (FindWay(map.MapObjects[i, j].Dude.x, map.MapObjects[i, j].Dude.y) != null)
+                                    {
+                                        targets.Add(new Aggro(map.MapObjects[i, j].Dude, 0, 1));
+                                    }
                                 }
+                            }
                         }
                     }
                 }
